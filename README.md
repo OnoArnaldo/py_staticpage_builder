@@ -33,7 +33,7 @@ Besides, two functions have been added to help in templates.
 This method returns the current year, the idea is to use with copyrights text.
 ```html
 <div class="somewhere-in-footer">
-  <p class="subtitle">&copy; {{ current_year() }} Simply Healthy. All right reserved.</p>
+  <p class="subtitle">&copy; {{ current_year() }} My company. All right reserved.</p>
 </div>
 ```
 
