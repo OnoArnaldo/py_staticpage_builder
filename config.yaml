@@ -1,0 +1,10 @@
+config:
+  dirs:
+    sites: ./web/_sites
+    templates: ./web/templates
+    static: ./web/static
+    pages: ./web/pages
+    data: ./web/data
+  urls:
+    home: https://home-page.com
+    static: /static
