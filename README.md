@@ -214,6 +214,7 @@ culpa qui officia deserunt mollit anim id est laborum.
 The basic commands are:
 ```terminal
 python main.py -build
+python main.py -build-compressed
 python mail.py -watch
 ```
 
@@ -234,5 +235,3 @@ python simple_http_server.py
 
 > Note that simple_http_server is a lazy development
 > and there is a lot of room for improvement
-
-> it doesn't check config.yaml, all directories are hardcoded

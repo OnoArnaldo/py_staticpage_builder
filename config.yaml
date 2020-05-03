@@ -8,3 +8,6 @@ config:
   urls:
     home: https://home-page.com
     static: /static
+  minify:
+    js_dir: ./web/static/js
+    compilation_level: ADVANCED_OPTIMIZATIONS

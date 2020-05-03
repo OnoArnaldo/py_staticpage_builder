@@ -3,7 +3,7 @@ from watchdog.events import FileSystemEventHandler, FileCreatedEvent, FileDelete
 import time
 import sys
 
-from page_builder import Builder, loads_config
+from page_builder import Builder, Minifier, loads_config
 from page_builder.config import build_config
 
 
@@ -33,6 +33,14 @@ def build():
     builder.run()
 
 
+def build_compressed():
+    print('Building with compressed js')
+    config = loads_config('./config.yaml')
+
+    Minifier(config).run()
+    Builder(config).run()
+
+
 def watch():
     print('Start watching')
     config = loads_config('./config.yaml')
@@ -58,13 +66,19 @@ def watch():
 
 
 def help():
-    print('main.py [options]')
+    print('%s [options]' % (__file__,))
     print('')
     print('options:')
     print('  -create-config <config-file>')
+    print('      Create configuration file (yaml file).')
     print('  -watch')
+    print('      Build website and watch for changes. This will automatically rebuild the website every time something changes.')
     print('  -build')
+    print('      Build website.')
+    print('  -build-compressed')
+    print('      Compress js files and build website. It uses closure-compiler and requires internet connection.')
     print('  -help')
+    print('')
 
 
 def main(args):
@@ -79,6 +93,9 @@ def main(args):
 
     elif args[0] == '-watch':
         watch()
+
+    elif args[0] == '-build-compressed':
+        build_compressed()
 
 
 if __name__ == '__main__':
