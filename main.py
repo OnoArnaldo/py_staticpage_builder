@@ -6,6 +6,8 @@ import sys
 from page_builder import Builder, Minifier, loads_config
 from page_builder.config import build_config
 
+CONFIG = './config.yaml'
+
 
 class PageBuilderEventHandler(FileSystemEventHandler):
     def __init__(self, builder, build_pages=True, build_static=True):
@@ -28,14 +30,14 @@ class PageBuilderEventHandler(FileSystemEventHandler):
 
 def build():
     print('Building')
-    config = loads_config('./config.yaml')
+    config = loads_config(CONFIG)
     builder = Builder(config)
     builder.run()
 
 
 def build_compressed():
     print('Building with compressed js')
-    config = loads_config('./config.yaml')
+    config = loads_config(CONFIG)
 
     Minifier(config).run()
     Builder(config).run()
@@ -43,7 +45,7 @@ def build_compressed():
 
 def watch():
     print('Start watching')
-    config = loads_config('./config.yaml')
+    config = loads_config(CONFIG)
     builder = Builder(config)
     builder.run()
 
@@ -72,7 +74,8 @@ def help():
     print('  -create-config <config-file>')
     print('      Create configuration file (yaml file).')
     print('  -watch')
-    print('      Build website and watch for changes. This will automatically rebuild the website every time something changes.')
+    print('      Build website and watch for changes. '
+          'This will automatically rebuild the website every time something changes.')
     print('  -build')
     print('      Build website.')
     print('  -build-compressed')
