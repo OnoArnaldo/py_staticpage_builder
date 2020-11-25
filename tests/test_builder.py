@@ -23,7 +23,7 @@ def builder(config):
 
     delete_sites()
     yield bld
-    # delete_sites()
+    delete_sites()
 
 
 def test_build(builder):
