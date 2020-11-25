@@ -124,16 +124,10 @@ class Builder:
 
         for root, dirs, files in os.walk(self.config.dirs._sites):
             for file_name in files:
-                full_name = os.path.join(root, file_name)
-                minify(full_name, save_as=full_name if full_name.endswith('.html') else None)
-                # _, ext = os.path.splitext(file_name)
-
-                # if ext.lower() == '.html':
-                #     process_single_html_file(full_name, overwrite=True)
-                # if ext.lower() == '.css':
-                #     process_single_css_file(full_name)
-                # elif ext.lower() == '.js':
-                #     process_single_js_file(full_name)
+                _, ext = os.path.splitext(file_name)
+                if ext.lower() in ['.html', '.css', '.js']:
+                    full_name = os.path.join(root, file_name)
+                    minify(full_name, save_as=full_name if full_name.endswith('.html') else None)
 
     def run(self, *, clear=True, build_pages=True, build_static=True, compress_static=True):
         if clear:
