@@ -24,3 +24,11 @@ def test_data_not_exists(data):
     not_exists = data.loads('not_exists')
 
     assert not_exists is None
+
+
+def test_data_with_key(data):
+    func = data.function()
+    contacts = func('company', 'contacts')
+
+    assert contacts['email'] == 'contact@email.com'
+    assert contacts['phone'] == '+123 456789012'

@@ -60,6 +60,8 @@ Put all your data that will be used in the html files. The files has to be a yam
 
 Below is an example.
 
+**Example 1**
+
 `dirs/data/company.yaml`
 ```yaml
 name: Company ABC
@@ -82,6 +84,46 @@ addresses:
 {% for address in company.addresses %}
     <p>{{ address.invoice }}</p>
 {% endfor %}
+```
+
+**Example 2**
+
+`dirs/data/home.yaml`
+```yaml
+data:
+  team:
+    - name: John
+      email: john@email.com
+    - name: Anna
+      email: anna@email.com
+  products:
+    - title: Item 1
+      price: 100.00
+    - title: Item 2
+      price: 200.00
+otherInfo:
+  - other list
+```
+
+`dirs/pages/about.html`
+```html
+...
+<section class="team">
+  <div class="member">
+  {% for member in data('home', 'data/team') %}
+    <div>{{ member.name }} - {{ member.email }}</div>  
+  {% endfor %}
+  </div>
+</section>
+
+<section class="products">
+  <div class="product">
+  {% for product in data('home', 'data/products') %}
+    <div>{{ product.title }} - {{ product.price}} </div>
+  {% endfor %}
+  </div>
+</section>
+...
 ```
 
 #### The pages folder
