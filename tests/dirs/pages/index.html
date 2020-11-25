@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% set company = data('company') %}
+
+{% block title %}{{ the_title }}{% endblock %}
+
+{% block body %}
+  <h1>This is the home page</h1>
+
+  <p>{{ company.name }}</p>
+  <p>{{ company.address }}</p>
+  <p>{{ company.contacts.email }}</p>
+  <p>{{ company.contacts.phone }}</p>
+{% endblock %}

@@ -1,0 +1,9 @@
+name: Company ABC
+address: ABC Street
+contacts:
+  email: contact@email.com
+  phone: +123 456789012
+books:
+  - Thinking, Fast and Slow
+  - Better Angles of Ourselves
+  - The dictator handbook

@@ -14,17 +14,12 @@ config:
 '''
 
 
-def build_config(file_name):
-    with open(file_name, 'w') as f:
-        f.write(CONFIG_TEMPLATE)
-    f.close()
-
-
 def loads(file_name):
-    with open(file_name, 'r') as f:
-        cfg = yaml.safe_load(f)
+    with open(file_name) as f:
+        text = f.read()
     f.close()
-    return Config(cfg.get('config', {}))
+
+    return Config.from_yaml(text)
 
 
 # Ref: based on https://github.com/alon710/DictToObj
@@ -38,3 +33,8 @@ class Config:
 
     def __repr__(self):
         return 'Config({})'.format(', '.join([k for k in self.__dict__]))
+
+    @classmethod
+    def from_yaml(cls, yaml_text):
+        value = yaml.safe_load(yaml_text)
+        return cls(value)

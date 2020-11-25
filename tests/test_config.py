@@ -1,34 +1,26 @@
-import unittest
-from page_builder import config
-from tests.helpers import TestFile
-
-CONFIG = '''\
-config:
-  dirs:
-    sites: ./sites
-    templates: ./templates
-    static: ./static
-  urls:
-    home: https://my-page.com
-    static: /static
-'''
+from pystaticpage.config import loads, Config
 
 
-class TestConfig(unittest.TestCase):
-    def setUp(self) -> None:
-        config.CONFIG_TEMPLATE = CONFIG
-        config.open = TestFile
+def test_config_with_dict(config_dict):
+    cfg = Config(config_dict)
 
-    def test_create_config(self):
-        config.build_config('./the_test.yaml')
+    assert cfg.config.dirs._sites == './dirs/_sites'
+    assert cfg.config.dirs.data == './dirs/data'
+    assert cfg.config.urls.home == 'https://home-page.com'
 
-        self.assertEqual(CONFIG, TestFile.text)
 
-    def test_load_config(self):
-        cfg = config.loads('./the_test.yaml')
+def test_config_with_yaml(config_yaml):
+    cfg = Config.from_yaml(config_yaml)
 
-        self.assertEqual('./sites', cfg.dirs.sites)
-        self.assertEqual('./templates', cfg.dirs.templates)
-        self.assertEqual('./static', cfg.dirs.static)
-        self.assertEqual('https://my-page.com', cfg.urls.home)
-        self.assertEqual('/static', cfg.urls.static)
+    assert cfg.config.dirs._sites == './dirs/_sites'
+    assert cfg.config.dirs.data == './dirs/data'
+    assert cfg.config.urls.home == 'https://home-page.com'
+
+
+def test_config_with_file():
+    cfg = loads('./dirs/config.yaml')
+
+    assert isinstance(cfg, Config)
+    assert cfg.config.dirs._sites == './dirs/_sites'
+    assert cfg.config.dirs.data == './dirs/data'
+    assert cfg.config.urls.home == 'https://home-page.com'
