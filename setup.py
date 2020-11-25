@@ -24,7 +24,7 @@ setup(
         'Operating System :: OS Independent',
         'Programming Language :: Python :: 3.8',
     ],
-    install_requires=['markdown', 'PyYAML', 'Jinja2', 'css-html-js-minify'],
+    install_requires=['markdown', 'PyYAML', 'Jinja2', 'requests'],
     extras_require={
         'test': ['pytest', 'coverage'],
     },
