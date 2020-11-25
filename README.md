@@ -159,6 +159,10 @@ Pages can be a html file, using jinja syntax.
 
 Or it can be a markdown page.
 
+> Note that the template has a variable `content`, this variable will be replaced by the markdown content.
+
+> Note that the template has to use the filter `safe` to avoid escaping the content.
+
 `dirs/templates/blog_base.html`
 ```html
 {% extends 'base.html' %}
