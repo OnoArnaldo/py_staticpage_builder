@@ -8,3 +8,9 @@ config:
   urls:
     home: https://home-page.com
     static: /static
+  builder:
+    clear_before_build: true
+    use_only_index_page: false
+    pages: true
+    static: true
+    compress_static: true

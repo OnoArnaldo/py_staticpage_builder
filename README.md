@@ -1,8 +1,8 @@
 # Static Page Builder
 
-A very simple static site generator which works with markdown files and jinja templates.
+A very simple static site generator which works with markdown files, jinja templates and Andrew Chilton's minifiers.
 
-## Installation
+# Installation
 
 ```commandline
 python3.8 -m venv venv
@@ -11,128 +11,57 @@ pip install --upgrade pip
 pip install git+https://github.com/OnoArnaldo/py_staticpage_builder.git
 ```
 
-## Basic usage
+# Usage
 
 First you will need to build the project structure, I recommend the structure below.
 
 ```text
 .
 ├── dirs
-│   ├── config.yaml
-│   ├── _sites/
-│   ├── data/
-│   ├── pages/
-│   ├── static/
-│   └── templates/
-└── build.py
+│   ├── config.yaml     --> configuration file used to build the site.
+│   ├── _sites/         --> the static site will be built here, this folder will be created if not exists.
+│   ├── data/           --> yaml files with data that can be used in the templates.
+│   ├── pages/          --> html or markdow files to be transformed into static pages.
+│   ├── static/         --> all the assets you want to use in the templates, the files will be copied to _sites.
+│   └── templates/      --> templates using jinja syntax.
+└── build.py            --> script to execute the builder.
 ```
 
-#### The config.yaml file
+You can find an example in the `tests` folder.
 
-This file is used to build the static page. Check the sample below with all the options.
+## Configuration File
+
+Below is all the values that can be used in the configuration file.
 
 ```yaml
 config:
-  dirs:
+  dirs:     # the folder structure used for your project.
     _sites: ./dirs/_sites
     pages: ./dirs/pages
     templates: ./dirs/templates
     static: ./dirs/static
     data: ./dirs/data
-  urls:
+  urls:     # url used in your templates, more details below.
     home: https://home-page.com
     static: /static
+  builder:  # parameters for the builder
+    clear_before_build: true    # delete _site folder before building, default is True.
+    use_only_index_page: true   # use index.html for all the pages (this will remove the trailing .html), default is False.
+    pages: true                 # build the pages if set to True, default is True.
+    static: true                # copy assets to _site, default is True
+    compress_static: true       # compress html, js and css files in the end of the process, default is True.
+                                #    note that compressing the file will take considerably longer.
 ```
 
-#### The templates folder
+## Templates and pages
 
-Put all the templates files you will use to build the sites.
+The templates works exactly the way is in jinja [documentation](https://jinja2docs.readthedocs.io/en/stable/).
 
-The template files uses jinja syntax, so go to their [documents](https://jinja2docs.readthedocs.io/en/stable/) for more details.
+Pages can be a html (using jinja syntax) or a markdown file (see this [document](https://daringfireball.net/projects/markdown/syntax) for the syntax).
 
-#### The static folder
+#### Example of html page
 
-Put all your images, scripts and style files here, these files will be copied to the `_site` folder.
-
-#### The data folder
-
-Put all your data that will be used in the html files. The files has to be a yaml file.
-
-Below is an example.
-
-**Example 1**
-
-`dirs/data/company.yaml`
-```yaml
-name: Company ABC
-address: ABC Street
-contacts:
-  email: contact@email.com
-  phone: +123 456789012
-addresses:
-  - delivery: address 001
-    invoice: address 002
-```
-
-`dirs/pages/some_page.html`
-```html
-{% set company = data('company') %}
-
-<h1>{{ company.name }}</h1>
-<h2>{{ company.contacts.email }}</h2>
-
-{% for address in company.addresses %}
-    <p>{{ address.invoice }}</p>
-{% endfor %}
-```
-
-**Example 2**
-
-`dirs/data/home.yaml`
-```yaml
-data:
-  team:
-    - name: John
-      email: john@email.com
-    - name: Anna
-      email: anna@email.com
-  products:
-    - title: Item 1
-      price: 100.00
-    - title: Item 2
-      price: 200.00
-otherInfo:
-  - other list
-```
-
-`dirs/pages/about.html`
-```html
-...
-<section class="team">
-  <div class="member">
-  {% for member in data('home', 'data/team') %}
-    <div>{{ member.name }} - {{ member.email }}</div>  
-  {% endfor %}
-  </div>
-</section>
-
-<section class="products">
-  <div class="product">
-  {% for product in data('home', 'data/products') %}
-    <div>{{ product.title }} - {{ product.price}} </div>
-  {% endfor %}
-  </div>
-</section>
-...
-```
-
-#### The pages folder
-
-For every file in this folder, a rendered html file will be created in `_site` folder.
-
-Pages can be a html file, using jinja syntax.
-
-`dirs/templates/base.html`
+`templates/base.html`
 ```html
 <!DOCTYPE html>
 <html lang="en">
@@ -146,24 +75,23 @@ Pages can be a html file, using jinja syntax.
 </html>
 ```
 
-`dirs/pages/index.html`
+`pages/index.html`
 ```html
 {% extends 'base.html' %}
 
-{%block title%}Index title{% endblock %}
+{% block title %}This is HOME{% endblock %}
 
 {% block body %}
-<h1>The index</h1>
+  <h1>This is the home page</h1>
 {% endblock %}
 ```
 
-Or it can be a markdown page.
+> Note that we are simply using jinja syntax.
 
-> Note that the template has a variable `content`, this variable will be replaced by the markdown content.
 
-> Note that the template has to use the filter `safe` to avoid escaping the content.
+#### Example of markdown page
 
-`dirs/templates/blog_base.html`
+`templates/blog_template.html`
 ```html
 {% extends 'base.html' %}
 
@@ -175,9 +103,13 @@ Or it can be a markdown page.
 {% endblock %}
 ```
 
-`dirs/pages/blog/20201201.md`
+> markdown content will replace the variable `content`.
+
+> `content` needs to use the filter `safe` to parse properly.
+
+`pages/blog/20200101.md`
 ```markdown
-template: blog_base.html
+template: blog_template.html
 title: First thoughts
 
 # This is the header {: .title #main-title}
@@ -187,7 +119,79 @@ title: First thoughts
 * item 3
 ```
 
-#### The build.py file
+> note that the header contains key-value pairs will be sent to the template.
+
+> template key is mandatory.
+
+> html attribute can be added using {: .class_attribute #id_attribute}.
+
+## Data files
+
+`data/company.yml`
+```yaml
+name: Company ABC
+contacts:
+    - type: email
+      value: contact@email.com
+    - type: phone
+      value: 1234 5678
+address:
+    delivery:
+        street: ABC Street
+        number: 1000
+        country: ABCD
+```
+
+`pages/about.html`
+```html
+{% extends 'base.html' %}
+{{ set company = data('company') }}
+
+{% block title %}About - {{ company.name }}{% endblock %}
+
+{% block body %}
+  {% for contact in company.contacts %}
+    <p>{{ contact.type }}: {{ contact.value }}</p>
+  {% endfor %}
+{% endblock %}
+```
+
+Or something like:
+```html
+    ...
+    {{ set address = data('company', 'address/delivery') }}
+
+    <p>{{ address.street }}</p>
+    <p>{{ address.number }}</p>
+    <p>{{ address.country }}</p>
+    ...
+```
+
+## Functions
+
+There few functions that can be used in the templates.
+
+* url_home(): get the value in the configuration file.
+* url_static(): get the value in the configuration file.
+* current_year(): get current year (useful for copyright).
+
+Example:
+
+```html
+...
+<h1>{{ url_home() }}</h1>
+
+<div class="somewhere-in-footer">
+  <p class="subtitle">&copy; {{ current_year() }} My company. All right reserved.</p>
+</div>
+
+<img src="{{ url_static() }}/image.jpg">
+...
+```
+
+> The idea is to implement a way to add functions.
+
+## build.py file
 
 You will have to create a script to execute the builder.
 
@@ -207,12 +211,22 @@ if __name__ == '__main__':
     main()
 ```
 
-Then just execute the script.
-```commandline
-python build.py
+You can override the parameters which were set in the config file as below.
+
+```python
+builder.run(clear=True, build_pages=True, build_static=True, compress_static=True, only_index_page=True)
 ```
 
-## Install for development
+Then just execute the script to build the static site.
+
+```commandline
+venv/bin/python build.py
+```
+
+
+# Development
+
+## Installation
 
 ```commandline
 pip install -e .
@@ -224,3 +238,4 @@ pip install -e .
 pip install '.[test]'
 pytest
 ```
+

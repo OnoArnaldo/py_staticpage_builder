@@ -22,6 +22,8 @@ def create_jinja_env(config, data):
     )
 
     env.globals['current_year'] = current_year
+    env.globals['url_home'] = lambda: config.urls.home
+    env.globals['url_static'] = lambda: config.urls.static
     env.globals['data'] = data.function()
     return env
 
@@ -70,16 +72,21 @@ class Builder:
         shutil.rmtree(self.config.dirs._sites, ignore_errors=True)
         self.initialised = False
 
-    def save_content(self, template_name, content):
-        new_file = os.path.join(self.config.dirs._sites, template_name)
-        new_dir, _ = os.path.split(new_file)
+    def save_content(self, template_name, content, only_index_page=False):
+        if only_index_page and template_name != 'index.html':
+            template_name, _ = os.path.splitext(template_name)
+            new_file = os.path.join(self.config.dirs._sites, template_name, 'index.html')
+            new_dir, _ = os.path.split(new_file)
+        else:
+            new_file = os.path.join(self.config.dirs._sites, template_name)
+            new_dir, _ = os.path.split(new_file)
 
         os.makedirs(new_dir, exist_ok=True)
 
         with open(new_file, 'w') as f:
             f.write(content)
 
-    def build_pages(self):
+    def build_pages(self, only_index_page):
         self.init()
 
         data = Data(self.config.dirs.data)
@@ -93,13 +100,13 @@ class Builder:
 
                 if ext.lower() == '.html':
                     content = HTMLParser.parser(env, template_name)
-                    self.save_content(template_name, content)
+                    self.save_content(template_name, content, only_index_page)
                 elif ext.lower() == '.md':
                     markdown_name = os.path.join(root, file_name)
                     content, headers = MarkdownParser.parse_from_file(markdown_name)
                     content = HTMLParser.parser(env, headers.get('template', 'base.html'), content=content, **headers)
 
-                    self.save_content(template_name.replace(ext, '.html'), content)
+                    self.save_content(template_name.replace(ext, '.html'), content, only_index_page)
 
     def build_static(self):
         self.init()
@@ -129,15 +136,24 @@ class Builder:
                     full_name = os.path.join(root, file_name)
                     minify(full_name, save_as=full_name if full_name.endswith('.html') else None)
 
-    def run(self, *, clear=True, build_pages=True, build_static=True, compress_static=True):
-        if clear:
+    def _perform(self, arg, config_key, default=False):
+        return arg or (arg is None and self.config.get(config_key, default))
+
+    def run(self, *,
+            clear: bool = None,
+            build_pages: bool = None,
+            build_static: bool = None,
+            compress_static: bool = None,
+            only_index_page: bool = None):
+
+        if self._perform(clear, 'builder.clear_before_build', True):
             self.clear()
 
-        if build_pages:
-            self.build_pages()
+        if self._perform(build_pages, 'builder.pages', True):
+            self.build_pages(self._perform(only_index_page, 'builder.use_only_index_page', False))
 
-        if build_static:
+        if self._perform(build_static, 'builder.static', True):
             self.build_static()
 
-        if compress_static:
+        if self._perform(compress_static, 'builder.compress_static', True):
             self.compress_static()

@@ -6,7 +6,7 @@ long_description = (here / 'README.md').read_text(encoding='utf-8')
 
 setup(
     name='py_staticpage_builder',
-    version='1.0.0',
+    version='2',
     description='Static page generator.',
     long_description=long_description,
     long_description_content_type='text/markdown',

@@ -38,3 +38,11 @@ class Config:
     def from_yaml(cls, yaml_text):
         value = yaml.safe_load(yaml_text)
         return cls(value)
+
+    def get(self, key, default=None):
+        if '.' in key:
+            keys = key.split('.')
+            return getattr(self, keys[0]).get('.'.join(keys[1:]))
+        if hasattr(self, key):
+            return getattr(self, key)
+        return default
