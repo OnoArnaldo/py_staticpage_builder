@@ -141,5 +141,9 @@ def test_build_only_index_skip_pages(builder):
     builder.run(build_pages=True, build_static=False, compress_static=False, only_index_page=True,
                 skip_for_index=['404.html', r'some.*ToSkip.*'])
 
+    assert text_from('./expected_site/index.html') == text_from('./dirs/_sites/index.html')
+    assert text_from('./expected_site/blog/20200126.html') == text_from('./dirs/_sites/blog/20200126/index.html')
+    assert text_from('./expected_site/blog/20200125.html') == text_from('./dirs/_sites/blog/20200125/index.html')
+
     assert os.path.exists('./dirs/_sites/404.html')
     assert os.path.exists('./dirs/_sites/blog/somethingToSkip.html')

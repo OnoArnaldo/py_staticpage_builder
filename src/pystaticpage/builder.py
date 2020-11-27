@@ -76,7 +76,7 @@ class Builder:
     def _not_in_skip_list(self, template_name, skip_for_index):
         for pattern in skip_for_index:
             matches = re.findall(pattern, template_name)
-            if len(matches) == 0:
+            if len(matches) != 0:
                 return False
         return True
 
