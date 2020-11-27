@@ -80,7 +80,7 @@ class Builder:
                 return False
         return True
 
-    def save_content(self, template_name, content, only_index_page=False, skip_for_index=[]):
+    def save_content(self, template_name, content, only_index_page, skip_for_index):
         if only_index_page and template_name != 'index.html' and self._not_in_skip_list(template_name, skip_for_index):
             template_name, _ = os.path.splitext(template_name)
             new_file = os.path.join(self.config.dirs._sites, template_name, 'index.html')
