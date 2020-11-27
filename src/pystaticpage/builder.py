@@ -1,6 +1,7 @@
 import os
 import shutil
 import datetime
+import re
 import markdown
 import jinja2
 from .data import Data
@@ -72,8 +73,15 @@ class Builder:
         shutil.rmtree(self.config.dirs._sites, ignore_errors=True)
         self.initialised = False
 
-    def save_content(self, template_name, content, only_index_page=False):
-        if only_index_page and template_name != 'index.html':
+    def _not_in_skip_list(self, template_name, skip_for_index):
+        for pattern in skip_for_index:
+            matches = re.findall(pattern, template_name)
+            if len(matches) == 0:
+                return False
+        return True
+
+    def save_content(self, template_name, content, only_index_page=False, skip_for_index=[]):
+        if only_index_page and template_name != 'index.html' and self._not_in_skip_list(template_name, skip_for_index):
             template_name, _ = os.path.splitext(template_name)
             new_file = os.path.join(self.config.dirs._sites, template_name, 'index.html')
             new_dir, _ = os.path.split(new_file)
@@ -86,7 +94,7 @@ class Builder:
         with open(new_file, 'w') as f:
             f.write(content)
 
-    def build_pages(self, only_index_page):
+    def build_pages(self, only_index_page, skip_for_index):
         self.init()
 
         data = Data(self.config.dirs.data)
@@ -100,13 +108,13 @@ class Builder:
 
                 if ext.lower() == '.html':
                     content = HTMLParser.parser(env, template_name)
-                    self.save_content(template_name, content, only_index_page)
+                    self.save_content(template_name, content, only_index_page, skip_for_index)
                 elif ext.lower() == '.md':
                     markdown_name = os.path.join(root, file_name)
                     content, headers = MarkdownParser.parse_from_file(markdown_name)
                     content = HTMLParser.parser(env, headers.get('template', 'base.html'), content=content, **headers)
 
-                    self.save_content(template_name.replace(ext, '.html'), content, only_index_page)
+                    self.save_content(template_name.replace(ext, '.html'), content, only_index_page, skip_for_index)
 
     def build_static(self):
         self.init()
@@ -136,24 +144,30 @@ class Builder:
                     full_name = os.path.join(root, file_name)
                     minify(full_name, save_as=full_name if full_name.endswith('.html') else None)
 
-    def _perform(self, arg, config_key, default=False):
-        return arg or (arg is None and self.config.get(config_key, default))
+    def _value(self, arg, config_key, default=None):
+        if arg is None:
+            return self.config.get(config_key, default)
+        return arg
 
     def run(self, *,
             clear: bool = None,
             build_pages: bool = None,
             build_static: bool = None,
             compress_static: bool = None,
-            only_index_page: bool = None):
+            only_index_page: bool = None,
+            skip_for_index: list = None):
 
-        if self._perform(clear, 'builder.clear_before_build', True):
+        if self._value(clear, 'builder.clear_before_build', True):
             self.clear()
 
-        if self._perform(build_pages, 'builder.pages', True):
-            self.build_pages(self._perform(only_index_page, 'builder.use_only_index_page', False))
+        if self._value(build_pages, 'builder.pages', True):
+            self.build_pages(
+                only_index_page=self._value(only_index_page, 'builder.use_only_index_page', False),
+                skip_for_index=self._value(skip_for_index, 'builder.skip_for_index', [])
+            )
 
-        if self._perform(build_static, 'builder.static', True):
+        if self._value(build_static, 'builder.static', True):
             self.build_static()
 
-        if self._perform(compress_static, 'builder.compress_static', True):
+        if self._value(compress_static, 'builder.compress_static', True):
             self.compress_static()

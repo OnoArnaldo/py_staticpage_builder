@@ -47,11 +47,13 @@ def test_build_defaults(builder):
     assert os.path.exists('./dirs/_sites/static/css/index.css')
 
     assert minifier_calls == [
+        ['./dirs/_sites/404.html', './dirs/_sites/404.html'],
         ['./dirs/_sites/index.html', './dirs/_sites/index.html'],
         ['./dirs/_sites/blog/20200125.html', './dirs/_sites/blog/20200125.html'],
         ['./dirs/_sites/blog/20200126.html', './dirs/_sites/blog/20200126.html'],
+        ['./dirs/_sites/blog/somethingToSkip.html', './dirs/_sites/blog/somethingToSkip.html'],
         ['./dirs/_sites/static/css/index.css', None],
-        ['./dirs/_sites/static/js/index.js', None],
+        ['./dirs/_sites/static/js/index.js', None]
     ]
 
 
@@ -69,11 +71,13 @@ def test_build(builder):
     assert os.path.exists('./dirs/_sites/static/css/index.css')
 
     assert minifier_calls == [
+        ['./dirs/_sites/404.html', './dirs/_sites/404.html'],
         ['./dirs/_sites/index.html', './dirs/_sites/index.html'],
         ['./dirs/_sites/blog/20200125.html', './dirs/_sites/blog/20200125.html'],
         ['./dirs/_sites/blog/20200126.html', './dirs/_sites/blog/20200126.html'],
+        ['./dirs/_sites/blog/somethingToSkip.html', './dirs/_sites/blog/somethingToSkip.html'],
         ['./dirs/_sites/static/css/index.css', None],
-        ['./dirs/_sites/static/js/index.js', None],
+        ['./dirs/_sites/static/js/index.js', None]
     ]
 
 
@@ -92,10 +96,12 @@ def test_build_only_index(builder):
 
     assert minifier_calls == [
         ['./dirs/_sites/index.html', './dirs/_sites/index.html'],
-        ['./dirs/_sites/blog/20200125/index.html', './dirs/_sites/blog/20200125/index.html'],
-        ['./dirs/_sites/blog/20200126/index.html', './dirs/_sites/blog/20200126/index.html'],
-        ['./dirs/_sites/static/css/index.css', None],
-        ['./dirs/_sites/static/js/index.js', None],
+         ['./dirs/_sites/404/index.html', './dirs/_sites/404/index.html'],
+         ['./dirs/_sites/blog/20200125/index.html', './dirs/_sites/blog/20200125/index.html'],
+         ['./dirs/_sites/blog/20200126/index.html', './dirs/_sites/blog/20200126/index.html'],
+         ['./dirs/_sites/blog/somethingToSkip/index.html', './dirs/_sites/blog/somethingToSkip/index.html'],
+         ['./dirs/_sites/static/css/index.css', None],
+         ['./dirs/_sites/static/js/index.js', None]
     ]
 
 
@@ -129,3 +135,11 @@ def test_build_only_static(builder):
     assert os.path.exists('./dirs/_sites/static/css/index.css')
 
     assert minifier_calls == []
+
+
+def test_build_only_index_skip_pages(builder):
+    builder.run(build_pages=True, build_static=False, compress_static=False, only_index_page=True,
+                skip_for_index=['404.html', r'some.*ToSkip.*'])
+
+    assert os.path.exists('./dirs/_sites/404.html')
+    assert os.path.exists('./dirs/_sites/blog/somethingToSkip.html')

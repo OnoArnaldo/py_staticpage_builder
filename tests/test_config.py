@@ -39,6 +39,7 @@ def test_config_attribute_does_not_exists(config):
 def test_config_key_does_not_exists(config):
     assert config.config.dirs.get('not_exists') is None
     assert config.config.dirs.get('not_exists', 123) == 123
+    assert config.config.dirs.get('not.exists', 123) == 123
 
 
 def test_config_key_exists(config):

@@ -42,7 +42,7 @@ class Config:
     def get(self, key, default=None):
         if '.' in key:
             keys = key.split('.')
-            return getattr(self, keys[0]).get('.'.join(keys[1:]))
-        if hasattr(self, key):
-            return getattr(self, key)
-        return default
+            attr = getattr(self, keys[0], Config({}))
+            return attr.get('.'.join(keys[1:]), default)
+
+        return getattr(self, key, default)
