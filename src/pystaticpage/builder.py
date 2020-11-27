@@ -94,6 +94,15 @@ class Builder:
         with open(new_file, 'w') as f:
             f.write(content)
 
+    def copy_file(self, file_name):
+        orig_file = os.path.join(self.config.dirs.pages, file_name)
+        new_file = os.path.join(self.config.dirs._sites, file_name)
+        new_dir, _ = os.path.split(new_file)
+
+        os.makedirs(new_dir, exist_ok=True)
+
+        shutil.copy2(orig_file, new_file)
+
     def build_pages(self, only_index_page, skip_for_index):
         self.init()
 
@@ -115,6 +124,8 @@ class Builder:
                     content = HTMLParser.parser(env, headers.get('template', 'base.html'), content=content, **headers)
 
                     self.save_content(template_name.replace(ext, '.html'), content, only_index_page, skip_for_index)
+                else:
+                    self.copy_file(template_name)
 
     def build_static(self):
         self.init()

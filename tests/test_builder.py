@@ -43,6 +43,9 @@ def test_build_defaults(builder):
     assert text_from('./expected_site/blog/20200126.html') == text_from('./dirs/_sites/blog/20200126.html')
     assert text_from('./expected_site/blog/20200125.html') == text_from('./dirs/_sites/blog/20200125.html')
 
+    assert os.path.exists('./dirs/_sites/sitemap.xml')
+    assert os.path.exists('./dirs/_sites/blog/another.xml')
+
     assert os.path.exists('./dirs/_sites/static/js/index.js')
     assert os.path.exists('./dirs/_sites/static/css/index.css')
 
@@ -66,6 +69,9 @@ def test_build(builder):
     assert text_from('./expected_site/index.html') == text_from('./dirs/_sites/index.html')
     assert text_from('./expected_site/blog/20200126.html') == text_from('./dirs/_sites/blog/20200126.html')
     assert text_from('./expected_site/blog/20200125.html') == text_from('./dirs/_sites/blog/20200125.html')
+
+    assert os.path.exists('./dirs/_sites/sitemap.xml')
+    assert os.path.exists('./dirs/_sites/blog/another.xml')
 
     assert os.path.exists('./dirs/_sites/static/js/index.js')
     assert os.path.exists('./dirs/_sites/static/css/index.css')
@@ -91,6 +97,9 @@ def test_build_only_index(builder):
     assert text_from('./expected_site/blog/20200126.html') == text_from('./dirs/_sites/blog/20200126/index.html')
     assert text_from('./expected_site/blog/20200125.html') == text_from('./dirs/_sites/blog/20200125/index.html')
 
+    assert os.path.exists('./dirs/_sites/sitemap.xml')
+    assert os.path.exists('./dirs/_sites/blog/another.xml')
+
     assert os.path.exists('./dirs/_sites/static/js/index.js')
     assert os.path.exists('./dirs/_sites/static/css/index.css')
 
@@ -114,6 +123,9 @@ def test_build_only_pages(builder):
     assert text_from('./expected_site/index.html') == text_from('./dirs/_sites/index.html')
     assert text_from('./expected_site/blog/20200126.html') == text_from('./dirs/_sites/blog/20200126.html')
     assert text_from('./expected_site/blog/20200125.html') == text_from('./dirs/_sites/blog/20200125.html')
+
+    assert os.path.exists('./dirs/_sites/sitemap.xml')
+    assert os.path.exists('./dirs/_sites/blog/another.xml')
 
     assert not os.path.exists('./dirs/_sites/static/js/index.js')
     assert not os.path.exists('./dirs/_sites/static/css/index.css')
@@ -144,6 +156,9 @@ def test_build_only_index_skip_pages(builder):
     assert text_from('./expected_site/index.html') == text_from('./dirs/_sites/index.html')
     assert text_from('./expected_site/blog/20200126.html') == text_from('./dirs/_sites/blog/20200126/index.html')
     assert text_from('./expected_site/blog/20200125.html') == text_from('./dirs/_sites/blog/20200125/index.html')
+
+    assert os.path.exists('./dirs/_sites/sitemap.xml')
+    assert os.path.exists('./dirs/_sites/blog/another.xml')
 
     assert os.path.exists('./dirs/_sites/404.html')
     assert os.path.exists('./dirs/_sites/blog/somethingToSkip.html')
