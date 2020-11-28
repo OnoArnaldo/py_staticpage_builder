@@ -51,6 +51,9 @@ config:
     static: true                # copy assets to _site, default is True
     compress_static: true       # compress html, js and css files in the end of the process, default is True.
                                 #    note that compressing the file will take considerably longer.
+    skip_for_index:             # list of files that will not be turned into index.html
+      - file_name_patter        #    note that the name is a regex pattern
+      - ...
 ```
 
 ## Templates and pages
@@ -214,7 +217,9 @@ if __name__ == '__main__':
 You can override the parameters which were set in the config file as below.
 
 ```python
-builder.run(clear=True, build_pages=True, build_static=True, compress_static=True, only_index_page=True)
+builder.run(clear=True, build_pages=True, 
+            build_static=True, compress_static=True, 
+            only_index_page=True, skip_for_index=[])
 ```
 
 Then just execute the script to build the static site.
