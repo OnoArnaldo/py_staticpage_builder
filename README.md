@@ -228,6 +228,34 @@ Then just execute the script to build the static site.
 venv/bin/python build.py
 ```
 
+### build.py file with injected functions to be used in templates
+
+You can inject functions to be used in the templates as below.
+
+```python
+from pystaticpage import load_config, create_builder
+import datetime
+
+
+def utc_now():
+    return datetime.datetime.utcnow().strftime('%Y%m%d-%H%M%S')
+
+
+def main():
+    config = load_config('./dirs/config.yaml', template_methods={'utc_now': utc_now})
+    builder = create_builder(config)
+    builder.run()
+
+
+if __name__ == '__main__':
+    main()
+```
+
+In the template, you can call the method as below.
+
+```html
+<p>{{ utc_now() }}</p>
+```
 
 # Development
 

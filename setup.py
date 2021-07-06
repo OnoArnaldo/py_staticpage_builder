@@ -6,7 +6,7 @@ long_description = (here / 'README.md').read_text(encoding='utf-8')
 
 setup(
     name='py_staticpage_builder',
-    version='4',
+    version='5',
     description='Static page generator.',
     long_description=long_description,
     long_description_content_type='text/markdown',
@@ -15,14 +15,14 @@ setup(
     author_email='programmer@onoarnaldo.com',
     package_dir={'': 'src'},
     packages=find_packages(where='src'),
-    python_requires='~=3.8',
+    python_requires='~=3.9',
     classifiers=[
         'Development Status :: 1 - Planning',
         'Intended Audience :: Developers',
         'License :: Freely Distributable',
         'Natural Language :: English',
         'Operating System :: OS Independent',
-        'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
     ],
     install_requires=['markdown', 'PyYAML', 'Jinja2', 'requests'],
     extras_require={

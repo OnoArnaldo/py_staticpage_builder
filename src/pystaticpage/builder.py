@@ -12,11 +12,13 @@ def current_year():
     return datetime.datetime.utcnow().year
 
 
-def create_builder(config):
-    return Builder(config)
+def create_builder(config, template_methods=None):
+    builder = Builder(config)
+    builder.set_template_methods(template_methods)
+    return builder
 
 
-def create_jinja_env(config, data):
+def create_jinja_env(config, data, methods=None):
     env = jinja2.Environment(
         loader=jinja2.FileSystemLoader([config.dirs.templates, config.dirs.pages]),
         autoescape=jinja2.select_autoescape(['html', 'xml'])
@@ -26,6 +28,11 @@ def create_jinja_env(config, data):
     env.globals['url_home'] = lambda: config.urls.home
     env.globals['url_static'] = lambda: config.urls.static
     env.globals['data'] = data.function()
+
+    methods = methods or {}
+    for k, v in methods.items():
+        env.globals[k] = v
+
     return env
 
 
@@ -61,6 +68,7 @@ class HTMLParser:
 class Builder:
     def __init__(self, config):
         self.config = config.config
+        self._template_methods = None
         self.initialised = False
 
     def init(self):
@@ -72,6 +80,9 @@ class Builder:
     def clear(self):
         shutil.rmtree(self.config.dirs._sites, ignore_errors=True)
         self.initialised = False
+
+    def set_template_methods(self, template_methods):
+        self._template_methods = template_methods
 
     def _not_in_skip_list(self, template_name, skip_for_index):
         for pattern in skip_for_index:
@@ -107,7 +118,7 @@ class Builder:
         self.init()
 
         data = Data(self.config.dirs.data)
-        env = create_jinja_env(self.config, data)
+        env = create_jinja_env(self.config, data, self._template_methods)
         for root, dirs, files in os.walk(self.config.dirs.pages):
             dir_name = root.replace(self.config.dirs.pages, '')
 

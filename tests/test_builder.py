@@ -11,6 +11,10 @@ def fake_minifier(results):
     return _fake
 
 
+def cur_datetime():
+    return '2021-07-06 08:00:00'
+
+
 def delete_sites():
     if os.path.exists('./dirs/_sites'):
         shutil.rmtree('./dirs/_sites')
@@ -25,7 +29,7 @@ def text_from(file_name):
 
 @pytest.fixture
 def builder(config):
-    bld = create_builder(config)
+    bld = create_builder(config, template_methods={'cur_datetime': cur_datetime})
     assert isinstance(bld, Builder)
 
     delete_sites()
@@ -49,15 +53,16 @@ def test_build_defaults(builder):
     assert os.path.exists('./dirs/_sites/static/js/index.js')
     assert os.path.exists('./dirs/_sites/static/css/index.css')
 
-    assert minifier_calls == [
+    assert sorted(minifier_calls) == sorted([
         ['./dirs/_sites/404.html', './dirs/_sites/404.html'],
         ['./dirs/_sites/index.html', './dirs/_sites/index.html'],
         ['./dirs/_sites/blog/20200125.html', './dirs/_sites/blog/20200125.html'],
         ['./dirs/_sites/blog/20200126.html', './dirs/_sites/blog/20200126.html'],
         ['./dirs/_sites/blog/somethingToSkip.html', './dirs/_sites/blog/somethingToSkip.html'],
+        ['./dirs/_sites/injected_methods.html', './dirs/_sites/injected_methods.html'],
         ['./dirs/_sites/static/css/index.css', None],
         ['./dirs/_sites/static/js/index.js', None]
-    ]
+    ])
 
 
 def test_build(builder):
@@ -76,15 +81,16 @@ def test_build(builder):
     assert os.path.exists('./dirs/_sites/static/js/index.js')
     assert os.path.exists('./dirs/_sites/static/css/index.css')
 
-    assert minifier_calls == [
+    assert sorted(minifier_calls) == sorted([
         ['./dirs/_sites/404.html', './dirs/_sites/404.html'],
         ['./dirs/_sites/index.html', './dirs/_sites/index.html'],
         ['./dirs/_sites/blog/20200125.html', './dirs/_sites/blog/20200125.html'],
         ['./dirs/_sites/blog/20200126.html', './dirs/_sites/blog/20200126.html'],
         ['./dirs/_sites/blog/somethingToSkip.html', './dirs/_sites/blog/somethingToSkip.html'],
+        ['./dirs/_sites/injected_methods.html', './dirs/_sites/injected_methods.html'],
         ['./dirs/_sites/static/css/index.css', None],
         ['./dirs/_sites/static/js/index.js', None]
-    ]
+    ])
 
 
 def test_build_only_index(builder):
@@ -103,15 +109,16 @@ def test_build_only_index(builder):
     assert os.path.exists('./dirs/_sites/static/js/index.js')
     assert os.path.exists('./dirs/_sites/static/css/index.css')
 
-    assert minifier_calls == [
+    assert sorted(minifier_calls) == sorted([
         ['./dirs/_sites/index.html', './dirs/_sites/index.html'],
          ['./dirs/_sites/404/index.html', './dirs/_sites/404/index.html'],
          ['./dirs/_sites/blog/20200125/index.html', './dirs/_sites/blog/20200125/index.html'],
          ['./dirs/_sites/blog/20200126/index.html', './dirs/_sites/blog/20200126/index.html'],
          ['./dirs/_sites/blog/somethingToSkip/index.html', './dirs/_sites/blog/somethingToSkip/index.html'],
+         ['./dirs/_sites/injected_methods/index.html', './dirs/_sites/injected_methods/index.html'],
          ['./dirs/_sites/static/css/index.css', None],
          ['./dirs/_sites/static/js/index.js', None]
-    ]
+    ])
 
 
 def test_build_only_pages(builder):
@@ -162,3 +169,10 @@ def test_build_only_index_skip_pages(builder):
 
     assert os.path.exists('./dirs/_sites/404.html')
     assert os.path.exists('./dirs/_sites/blog/somethingToSkip.html')
+
+
+def test_build_with_injected_methods(builder):
+    builder.run(build_pages=True, build_static=False, compress_static=False, only_index_page=False,
+                skip_for_index=[r'injected_methods.*'])
+
+    assert text_from('./expected_site/injected_methods.html') == text_from('./dirs/_sites/injected_methods.html')
