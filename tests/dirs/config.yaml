@@ -5,6 +5,7 @@ config:
     templates: ./dirs/templates
     static: ./dirs/static
     data: ./dirs/data
+    sass: ./dirs/sass
   urls:
     home: https://home-page.com
     static: /static
@@ -13,4 +14,7 @@ config:
     use_only_index_page: false
     pages: true
     static: true
+    sass:
+      build: true
+      output_style: nested
     compress_static: true

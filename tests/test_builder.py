@@ -61,6 +61,8 @@ def test_build_defaults(builder):
         ['./dirs/_sites/blog/somethingToSkip.html', './dirs/_sites/blog/somethingToSkip.html'],
         ['./dirs/_sites/injected_methods.html', './dirs/_sites/injected_methods.html'],
         ['./dirs/_sites/static/css/index.css', None],
+        ['./dirs/_sites/static/css/anotherthing.css', None],
+        ['./dirs/_sites/static/css/something.css', None],
         ['./dirs/_sites/static/js/index.js', None]
     ])
 
@@ -89,6 +91,8 @@ def test_build(builder):
         ['./dirs/_sites/blog/somethingToSkip.html', './dirs/_sites/blog/somethingToSkip.html'],
         ['./dirs/_sites/injected_methods.html', './dirs/_sites/injected_methods.html'],
         ['./dirs/_sites/static/css/index.css', None],
+        ['./dirs/_sites/static/css/anotherthing.css', None],
+        ['./dirs/_sites/static/css/something.css', None],
         ['./dirs/_sites/static/js/index.js', None]
     ])
 
@@ -117,6 +121,8 @@ def test_build_only_index(builder):
          ['./dirs/_sites/blog/somethingToSkip/index.html', './dirs/_sites/blog/somethingToSkip/index.html'],
          ['./dirs/_sites/injected_methods/index.html', './dirs/_sites/injected_methods/index.html'],
          ['./dirs/_sites/static/css/index.css', None],
+         ['./dirs/_sites/static/css/anotherthing.css', None],
+         ['./dirs/_sites/static/css/something.css', None],
          ['./dirs/_sites/static/js/index.js', None]
     ])
 
@@ -176,3 +182,10 @@ def test_build_with_injected_methods(builder):
                 skip_for_index=[r'injected_methods.*'])
 
     assert text_from('./expected_site/injected_methods.html') == text_from('./dirs/_sites/injected_methods.html')
+
+
+def test_stylesheet_from_sass(builder):
+    builder.run(build_pages=False, build_static=False, build_sass=True, compress_static=False, only_index_page=False)
+
+    assert text_from('./expected_site/css/something.css') == text_from('./dirs/_sites/static/css/something.css')
+    assert text_from('./expected_site/css/anotherthing.css') == text_from('./dirs/_sites/static/css/anotherthing.css')

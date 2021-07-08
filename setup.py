@@ -24,7 +24,7 @@ setup(
         'Operating System :: OS Independent',
         'Programming Language :: Python :: 3.9',
     ],
-    install_requires=['markdown', 'PyYAML', 'Jinja2', 'requests'],
+    install_requires=['markdown', 'PyYAML', 'Jinja2', 'requests', 'libsass'],
     extras_require={
         'test': ['pytest', 'coverage'],
     },

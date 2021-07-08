@@ -4,6 +4,8 @@ import datetime
 import re
 import markdown
 import jinja2
+import sass
+
 from .data import Data
 from .minifier import minify
 
@@ -156,13 +158,25 @@ class Builder:
                     os.path.join(dir_name, file_name)
                 )
 
+    def build_sass(self, output_style):
+        self.init()
+
+        dir_css = os.path.join(self.config.dirs._sites, 'static', 'css')
+
+        os.makedirs(dir_css, exist_ok=True)
+
+        sass.compile(dirname=(self.config.dirs.sass, dir_css), output_style=output_style)
+
     def compress_static(self):
         self.init()
 
         for root, dirs, files in os.walk(self.config.dirs._sites):
             for file_name in files:
+                is_min_js = file_name.endswith('.min.js')
+                is_min_css = file_name.endswith('.min.css')
+
                 _, ext = os.path.splitext(file_name)
-                if ext.lower() in ['.html', '.css', '.js']:
+                if ext.lower() in ['.html', '.css', '.js'] and not is_min_css and not is_min_js:
                     full_name = os.path.join(root, file_name)
                     minify(full_name, save_as=full_name if full_name.endswith('.html') else None)
 
@@ -175,6 +189,8 @@ class Builder:
             clear: bool = None,
             build_pages: bool = None,
             build_static: bool = None,
+            build_sass: bool = None,
+            sass_output_style: str = None,
             compress_static: bool = None,
             only_index_page: bool = None,
             skip_for_index: list = None):
@@ -190,6 +206,10 @@ class Builder:
 
         if self._value(build_static, 'builder.static', True):
             self.build_static()
+
+        if self._value(build_sass, 'builder.sass.build', True):
+            output_style = self._value(sass_output_style, 'builder.sass.output_style', 'nested')
+            self.build_sass(output_style)
 
         if self._value(compress_static, 'builder.compress_static', True):
             self.compress_static()

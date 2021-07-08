@@ -23,6 +23,7 @@ First you will need to build the project structure, I recommend the structure be
 │   ├── data/           --> yaml files with data that can be used in the templates.
 │   ├── pages/          --> html or markdow files to be transformed into static pages.
 │   ├── static/         --> all the assets you want to use in the templates, the files will be copied to _sites.
+│   ├── sass/           --> all sass and scss files, this will be compiled and saved in _sites/static/css/.
 │   └── templates/      --> templates using jinja syntax.
 └── build.py            --> script to execute the builder.
 ```
@@ -54,11 +55,14 @@ config:
     skip_for_index:             # list of files that will not be turned into index.html
       - file_name_patter        #    note that the name is a regex pattern
       - ...
+    sass:
+      build: true               # compile all the sass and scss files.
+      output_style: nested      # check the link for the option https://sass.github.io/libsass-python/sass.html?highlight=sass%20syntax#sass.compile
 ```
 
 ## Templates and pages
 
-The templates works exactly the way is in jinja [documentation](https://jinja2docs.readthedocs.io/en/stable/).
+The templates work exactly the way is in jinja [documentation](https://jinja2docs.readthedocs.io/en/stable/).
 
 Pages can be a html (using jinja syntax) or a markdown file (see this [document](https://daringfireball.net/projects/markdown/syntax) for the syntax).
 
@@ -218,8 +222,8 @@ You can override the parameters which were set in the config file as below.
 
 ```python
 builder.run(clear=True, build_pages=True, 
-            build_static=True, compress_static=True, 
-            only_index_page=True, skip_for_index=[])
+            build_static=True, build_sass=True, sass_output_style='nested', 
+            compress_static=True, only_index_page=True, skip_for_index=[])
 ```
 
 Then just execute the script to build the static site.
@@ -272,7 +276,7 @@ pip install '.[test]'
 pytest
 ```
 
-# Lincese
+# License
 
 Copyright © 2020 Arnaldo Ono <programmer@onoarnaldo.com>
 
