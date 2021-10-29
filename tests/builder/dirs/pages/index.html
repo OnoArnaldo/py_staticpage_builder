@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% set company = data('company') %}
+
+{% block body %}
+    <h1>The main page</h1>
+    <h2>{{ company.name }}</h2>
+    <p>{{ company.contact.phone }}</p>
+
+    <p>{{ url_home }}</p>
+    <p>{{ url_static }}</p>
+    <p>{{ url_cdn }}</p>
+{% endblock %}

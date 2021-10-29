@@ -6,7 +6,7 @@ long_description = (here / 'README.md').read_text(encoding='utf-8')
 
 setup(
     name='py_staticpage_builder',
-    version='6',
+    version='10.0.0.0',
     description='Static page generator.',
     long_description=long_description,
     long_description_content_type='text/markdown',
@@ -24,7 +24,7 @@ setup(
         'Operating System :: OS Independent',
         'Programming Language :: Python :: 3.9',
     ],
-    install_requires=['markdown', 'PyYAML', 'Jinja2', 'requests', 'libsass'],
+    install_requires=['markdown', 'PyYAML', 'Jinja2', 'requests', 'libsass', 'boto3'],
     extras_require={
         'test': ['pytest', 'coverage'],
     },

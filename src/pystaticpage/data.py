@@ -1,38 +1,31 @@
-import os
-import glob
-import yaml
+import typing as _t
+import yaml as _yaml
+from pathlib import Path as _Path
+from .dependency import dependency as _dep
 
 
-def create_data(config):
-    return Data(config.config.dirs.data)
+class DataDoesNotExist(Exception): pass
 
 
 class Data:
-    def __init__(self, dir_name):
+    """
+    To be used inside templates.
+
+    Example:
+        {% set home = data('home') %}
+        <h1>{{ home.title }}</h1>
+    """
+
+    def __init__(self, dir_name: _t.Union[str, _Path]):
         self.dir_name = dir_name
 
-    def _file_name(self, data_name):
-        find_file = os.path.join(self.dir_name, f'{data_name}.*')
-        for fname in glob.glob(find_file):
-            return fname
-        return None
+    def __call__(self, data_name):
+        path = _dep.path_class(self.dir_name, data_name).with_suffix('.yaml')
+        if not path.exists():
+            path = _dep.path_class(self.dir_name, data_name).with_suffix('.yml')
 
-    def loads(self, data_name):
-        file_name = self._file_name(data_name)
-        if file_name is None:
-            return None
+        if not path.exists():
+            raise DataDoesNotExist(f'Data file for {data_name} does not exist.')
 
-        with open(file_name) as f:
-            text = f.read()
-        f.close()
-
-        return yaml.safe_load(text)
-
-    def function(self):
-        def _data(data_name, key=None):
-            ret = self.loads(data_name)
-            if isinstance(ret, dict) and key is not None:
-                for k in key.split('/'):
-                    ret = ret.get(k, {})
-            return ret
-        return _data
+        with _dep.open_file(path) as f:
+            return _yaml.safe_load(f)

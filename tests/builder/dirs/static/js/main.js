@@ -1,0 +1,1 @@
+document.body.getElementsByClassName('title')[0].textContent = 'Sample';

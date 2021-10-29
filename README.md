@@ -24,6 +24,7 @@ First you will need to build the project structure, I recommend the structure be
 │   ├── pages/          --> html or markdow files to be transformed into static pages.
 │   ├── static/         --> all the assets you want to use in the templates, the files will be copied to _sites.
 │   ├── sass/           --> all sass and scss files, this will be compiled and saved in _sites/static/css/.
+│   ├── cdn/            --> all files that will be uploaded to the cdn server.
 │   └── templates/      --> templates using jinja syntax.
 └── build.py            --> script to execute the builder.
 ```
@@ -36,28 +37,55 @@ Below is all the values that can be used in the configuration file.
 
 ```yaml
 config:
-  dirs:     # the folder structure used for your project.
-    _sites: ./dirs/_sites
+  dirs:     # the folder structure used for your project
+    sites: ./dirs/_sites
     pages: ./dirs/pages
     templates: ./dirs/templates
     static: ./dirs/static
+    cdn: ./dirs/cdn
     data: ./dirs/data
-  urls:     # url used in your templates, more details below.
+    sass: ./dirs/sass
+  urls:     # url used in your templates, more details below
     home: https://home-page.com
     static: /static
+    cdn: https://cdn.home-page.com/root
   builder:  # parameters for the builder
-    clear_before_build: true    # delete _site folder before building, default is True.
-    use_only_index_page: true   # use index.html for all the pages (this will remove the trailing .html), default is False.
-    pages: true                 # build the pages if set to True, default is True.
-    static: true                # copy assets to _site, default is True
-    compress_static: true       # compress html, js and css files in the end of the process, default is True.
-                                #    note that compressing the file will take considerably longer.
-    skip_for_index:             # list of files that will not be turned into index.html
-      - file_name_patter        #    note that the name is a regex pattern
-      - ...
+    clean_before_build: true  # delete dirs._sites before building
+    pages:
+      execute: true
+      only_index: false     # if set to TRUE, it will generate index.html for all the pages
+                                # (this will remove the trailing .html). Default: false
+      skip_for_index:           # list of files that will not be turned into index.html
+        - file_name_pattern     # the name is a regex pattern
+        - ...
+    static:
+      execute: true
+    minify:
+      execute: true
+      extensions: ['.html', '.js', '.css']
+      skip_files:
+        - .*min\.\w+
+      skip_dirs:
+        - cdn
     sass:
-      build: true               # compile all the sass and scss files.
+      execute: true
       output_style: nested      # check the link for the option https://sass.github.io/libsass-python/sass.html?highlight=sass%20syntax#sass.compile
+                                # Default: nested
+      destination: static       # choose the destination, it can be either `cdn` or `static`. Default: static
+    gzip:
+      execute: true
+      extensions: [.css, .js]   # choose the extensions that will be compressed. Default: []
+      skip_files:
+        - main.js
+    cdn:                      # configuration to integrate with the CDN
+      execute: true
+      service_name: servname
+      region_name: regname
+      bucket_name: bucname
+      object_key_prefix: keyprefix      # in case the files will be inside a folder in CDN
+      endpoint: "https://the-url.com"
+      aws_access_key: the_key
+      aws_secret_access_key: the_secret
 ```
 
 ## Templates and pages
@@ -221,9 +249,9 @@ if __name__ == '__main__':
 You can override the parameters which were set in the config file as below.
 
 ```python
-builder.run(clear=True, build_pages=True, 
-            build_static=True, build_sass=True, sass_output_style='nested', 
-            compress_static=True, only_index_page=True, skip_for_index=[])
+builder.run(clean=True, build_pages=True,
+            build_static=True, build_sass=True, sass_output_style='nested',
+            minify_extensions=['.css', '.js'], only_index_page=True, skip_for_index=[])
 ```
 
 Then just execute the script to build the static site.
@@ -275,11 +303,3 @@ pip install -e .
 pip install '.[test]'
 pytest
 ```
-
-# License
-
-Copyright © 2020 Arnaldo Ono <programmer@onoarnaldo.com>
-
-This work is free. You can redistribute it and/or modify it under the
-terms of the Do What The Fuck You Want To Public License, Version 2,
-as published by Sam Hocevar. See http://www.wtfpl.net/ for more details.
