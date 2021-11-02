@@ -201,6 +201,6 @@ def test_builder(dependency):
                                     'Body': b'Just some text.',
                                     'Bucket': 'bucname',
                                     'ContentEncoding': '',
-                                    'ContentType': 'text/plain',
+                                    'ContentType': 'text/plain; charset=utf-8',
                                     'Key': 'keyprefix/readme.txt',
                                     'Metadata': {'checksum': '5b6d8c4a28b23f65a878ed43231045bf'}}]]
