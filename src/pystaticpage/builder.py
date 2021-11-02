@@ -85,7 +85,7 @@ class Builder:
             aws_secret_access_key=self._config.builder.cdn.aws_secret_access_key
         )
 
-    def run(self):
+    def run(self, *, template_methods: _t.Dict[str, _t.Any] = None):
         _dep.utils_clean_folder(_dep.path_class(self.dirs_config.site))
 
         _tasks.TaskBuildPage()\
@@ -94,6 +94,7 @@ class Builder:
             .page_config(self.page_config)\
             .minify_config(self.minify_config)\
             .gzip_config(self.gzip_config)\
+            .methods(template_methods or {})\
             .execute()
 
         _tasks.TaskBuildSASS()\

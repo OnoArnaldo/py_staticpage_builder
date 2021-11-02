@@ -1,3 +1,4 @@
+import os
 import pytest
 from pystaticpage import config
 
@@ -285,3 +286,45 @@ def test_config_from_yaml():
     assert cfg.builder.cdn.endpoint == 'https://the-url.com'
     assert cfg.builder.cdn.aws_access_key == 'the_key'
     assert cfg.builder.cdn.aws_secret_access_key == 'the_secret'
+
+
+def test_config_from_env():
+    os.environ['STATIC_ACCESS_KEY'] = 'access_key'
+    os.environ['STATIC_SECRET_KEY'] = 'secret_key'
+
+    cfg = config.Config.from_yaml(
+        'config:\n'
+        '  environment: prod\n'
+        '  dirs:\n'
+        '    sites: ./dirs/sites\n'
+        '    pages: ./dirs/pages\n'
+        '    templates: ./dirs/templates\n'
+        '    static: ./dirs/static\n'
+        '    cdn: ./dirs/cdn\n'
+        '    data: ./dirs/data\n'
+        '    sass: ./dirs/sass\n'
+        '  urls:\n'
+        '    home: https://my-site.com\n'
+        '    static: /static\n'
+        '    cdn: https://cdn.my-site.com/assets\n'
+        '  builder:\n'
+        '    clean_before_build: True\n'
+        '    cdn:\n'
+        '      execute: True\n'
+        '      service_name: servname\n'
+        '      region_name: regname\n'
+        '      bucket_name: bucname\n'
+        '      object_key_prefix: keyprefix\n'
+        '      endpoint: https://the-url.com\n'
+        '      aws_access_key: "$ENV:STATIC_ACCESS_KEY"\n'
+        '      aws_secret_access_key: "$ENV:STATIC_SECRET_KEY"'
+    )
+
+    assert cfg.builder.cdn.execute
+    assert cfg.builder.cdn.service_name == 'servname'
+    assert cfg.builder.cdn.region_name == 'regname'
+    assert cfg.builder.cdn.bucket_name == 'bucname'
+    assert cfg.builder.cdn.object_key_prefix == 'keyprefix'
+    assert cfg.builder.cdn.endpoint == 'https://the-url.com'
+    assert cfg.builder.cdn.aws_access_key == 'access_key'
+    assert cfg.builder.cdn.aws_secret_access_key == 'secret_key'

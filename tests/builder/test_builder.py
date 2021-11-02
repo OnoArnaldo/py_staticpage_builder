@@ -1,6 +1,7 @@
 import pytest
 import gzip
 from pathlib import Path
+from tests.utils import fake_func
 from pystaticpage import create_builder
 from pystaticpage import dependency as dep
 
@@ -82,9 +83,10 @@ def test_builder(dependency):
     config = ROOT.joinpath('dirs/config.yaml')
 
     builder = create_builder(config)
-    builder.run()
+    builder.run(template_methods={'parse_date': fake_func('parse_date', LOG, ['2021-11-01'])})
 
     # TODO: check generated files
+    # TODO: add methods into templates
 
     assert LOG == [
         ['request post', ('https://html-minifier.com/raw',), {
@@ -107,6 +109,7 @@ def test_builder(dependency):
                               '\n'
                               '</body>\n'
                               '</html>'}}],
+        ['parse_date', ('0000',), {}],
         ['request post', ('https://html-minifier.com/raw',), {
             'data': {'input': '<!DOCTYPE html>\n'
                               '<html lang="en">\n'
@@ -123,6 +126,8 @@ def test_builder(dependency):
                               '    <p>https://home-page.com</p>\n'
                               '    <p>/static</p>\n'
                               '    <p>https://cdn.home-page.com/root</p>\n'
+                              '\n'
+                              '    <p>2021-11-01</p>\n'
                               '\n'
                               '</body>\n'
                               '</html>'}}],
@@ -147,7 +152,7 @@ def test_builder(dependency):
                                 'service_name': 'servname'}],
         ['Session head_bucket', (), {'Bucket': 'bucname'}],
         ['Session get_object', (), {'Bucket': 'bucname', 'Key': 'keyprefix/timetable.css'}],
-        ['Session put_object', (), {'ACL': 'public',
+        ['Session put_object', (), {'ACL': 'public-read',
                                     'Body': b'.timetable {\n'
                                             b'    font-size: 5rem;\n'
                                             b'}\n\n'
@@ -158,7 +163,7 @@ def test_builder(dependency):
                                     'ContentEncoding': '',
                                     'ContentType': 'text/css',
                                     'Key': 'keyprefix/timetable.css',
-                                    'Metadata': {'Checksum': '948b1d03e2eef4a3181a3888e7df9647'}}],
+                                    'Metadata': {'checksum': '948b1d03e2eef4a3181a3888e7df9647'}}],
         ['Session get_object', (), {'Bucket': 'bucname', 'Key': 'keyprefix/timetable.min.css'}],
         ['request post', ('https://cssminifier.com/raw',),
          {'data': {'input': '.timetable {\n'
@@ -168,34 +173,34 @@ def test_builder(dependency):
                             '.timetable .title {\n'
                             '    font-size: 10rem;\n'
                             '}\n'}}],
-        ['Session put_object', (), {'ACL': 'public',
+        ['Session put_object', (), {'ACL': 'public-read',
                                     'Body': b'.timetable{font-size:5rem;}.timetable.title{font-size:10rem;}',
                                     'Bucket': 'bucname',
                                     'ContentEncoding': '',
                                     'ContentType': 'text/css',
                                     'Key': 'keyprefix/timetable.min.css',
-                                    'Metadata': {'Checksum': '948b1d03e2eef4a3181a3888e7df9647'}}],
+                                    'Metadata': {'checksum': '948b1d03e2eef4a3181a3888e7df9647'}}],
         ['Session get_object', (), {'Bucket': 'bucname', 'Key': 'keyprefix/timetable.css.gz'}],
-        ['Session put_object', (), {'ACL': 'public',
+        ['Session put_object', (), {'ACL': 'public-read',
                                     'Body': Gzipped(b'.timetable {\n    font-size: 5rem;\n}\n\n.timetable .title {\n    font-size: 10rem;\n}\n'),
                                     'Bucket': 'bucname',
                                     'ContentEncoding': 'gzip',
                                     'ContentType': 'text/css',
                                     'Key': 'keyprefix/timetable.css.gz',
-                                    'Metadata': {'Checksum': '948b1d03e2eef4a3181a3888e7df9647'}}],
+                                    'Metadata': {'checksum': '948b1d03e2eef4a3181a3888e7df9647'}}],
         ['Session get_object', (), {'Bucket': 'bucname', 'Key': 'keyprefix/timetable.min.css.gz'}],
-        ['Session put_object', (), {'ACL': 'public',
+        ['Session put_object', (), {'ACL': 'public-read',
                                     'Body': Gzipped(b'.timetable{font-size:5rem;}.timetable.title{font-size:10rem;}'),
                                     'Bucket': 'bucname',
                                     'ContentEncoding': 'gzip',
                                     'ContentType': 'text/css',
                                     'Key': 'keyprefix/timetable.min.css.gz',
-                                    'Metadata': {'Checksum': '948b1d03e2eef4a3181a3888e7df9647'}}],
+                                    'Metadata': {'checksum': '948b1d03e2eef4a3181a3888e7df9647'}}],
         ['Session get_object', (), {'Bucket': 'bucname', 'Key': 'keyprefix/readme.txt'}],
-        ['Session put_object', (), {'ACL': 'public',
+        ['Session put_object', (), {'ACL': 'public-read',
                                     'Body': b'Just some text.',
                                     'Bucket': 'bucname',
                                     'ContentEncoding': '',
                                     'ContentType': 'text/plain',
                                     'Key': 'keyprefix/readme.txt',
-                                    'Metadata': {'Checksum': '5b6d8c4a28b23f65a878ed43231045bf'}}]]
+                                    'Metadata': {'checksum': '5b6d8c4a28b23f65a878ed43231045bf'}}]]

@@ -317,7 +317,7 @@ class TaskBuildPage(TaskBase, MinifierMixin, GziperMixin):
         relative = self.relative_path(orig)
         dest = _dep.path_class(self._dirs.site, relative)
 
-        _dep._utils_copy_file(orig, dest)
+        _dep.utils_copy_file(orig, dest)
 
         return dest
 
@@ -453,7 +453,7 @@ class TaskCopyCDN(TaskBase, MinifierMixin, GziperMixin):
     def _valid_checksum(self, key: str, checksum: str) -> bool:
         try:
             resp = self._current_client.get_object(Bucket=self._cdn.bucket_name, Key=key)
-            return resp.get('Metadata', {}).get('Checksum', '') == checksum
+            return resp.get('Metadata', {}).get('checksum', '') == checksum
         except:
             return False
 
@@ -470,10 +470,10 @@ class TaskCopyCDN(TaskBase, MinifierMixin, GziperMixin):
                 Bucket=self._cdn.bucket_name,
                 Key=obj.key,
                 Body=obj.text_byte,
-                ACL='public',
+                ACL='public-read',
                 ContentEncoding=obj.content_encoding,
                 ContentType=obj.content_type,
-                Metadata={'Checksum': obj.checksum}
+                Metadata={'checksum': obj.checksum}
             )
 
     def _put_minified_object(self, obj: CdnObject, can_minify: bool) -> _t.NoReturn:
@@ -482,10 +482,10 @@ class TaskCopyCDN(TaskBase, MinifierMixin, GziperMixin):
                 Bucket=self._cdn.bucket_name,
                 Key=obj.minified_key,
                 Body=obj.minified_text_byte,
-                ACL='public',
+                ACL='public-read',
                 ContentEncoding=obj.content_encoding,
                 ContentType=obj.content_type,
-                Metadata={'Checksum': obj.checksum}
+                Metadata={'checksum': obj.checksum}
             )
 
     def _put_gzipped_object(self, obj: CdnObject, can_gzip: bool) -> _t.NoReturn:
@@ -494,10 +494,10 @@ class TaskCopyCDN(TaskBase, MinifierMixin, GziperMixin):
                 Bucket=self._cdn.bucket_name,
                 Key=obj.gzipped_key,
                 Body=obj.gzipped_text_byte,
-                ACL='public',
+                ACL='public-read',
                 ContentEncoding=obj.gzipped_content_encoding,
                 ContentType=obj.content_type,
-                Metadata={'Checksum': obj.checksum}
+                Metadata={'checksum': obj.checksum}
             )
 
     def _put_gzipped_minified_object(self, obj: CdnObject, can_minify: bool, can_gzip: bool) -> _t.NoReturn:
@@ -506,22 +506,23 @@ class TaskCopyCDN(TaskBase, MinifierMixin, GziperMixin):
                 Bucket=self._cdn.bucket_name,
                 Key=obj.gzipped_minified_key,
                 Body=obj.gzipped_minified_text_byte,
-                ACL='public',
+                ACL='public-read',
                 ContentEncoding=obj.gzipped_content_encoding,
                 ContentType=obj.content_type,
-                Metadata={'Checksum': obj.checksum}
+                Metadata={'checksum': obj.checksum}
             )
 
     def execute(self) -> _t.NoReturn:
-        self._start_client()
+        if self._cdn.execute:
+            self._start_client()
 
-        if self._bucket_exists():
-            for f in _dep.utils_iter_files(self._dirs.cdn):
-                obj = self._create_cdn_object(f)
-                can_minify = self.can_generate_minify(f)
-                can_gzip = self.can_generate_gzip(f)
+            if self._bucket_exists():
+                for f in _dep.utils_iter_files(self._dirs.cdn):
+                    obj = self._create_cdn_object(f)
+                    can_minify = self.can_generate_minify(f)
+                    can_gzip = self.can_generate_gzip(f)
 
-                self._put_object(obj)
-                self._put_minified_object(obj, can_minify)
-                self._put_gzipped_object(obj, can_gzip)
-                self._put_gzipped_minified_object(obj, can_minify, can_gzip)
+                    self._put_object(obj)
+                    self._put_minified_object(obj, can_minify)
+                    self._put_gzipped_object(obj, can_gzip)
+                    self._put_gzipped_minified_object(obj, can_minify, can_gzip)

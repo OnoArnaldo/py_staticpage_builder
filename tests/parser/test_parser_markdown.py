@@ -47,5 +47,3 @@ def test_parse_markdown(dependency):
     assert LOG == [
         ['open', ('./dirs/sites/index.md',), {}], ['read', 'index.md'],
     ]
-
-# TODO: add data reference in the layout

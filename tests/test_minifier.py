@@ -64,4 +64,16 @@ def test_minify_overwrite(dependency):
     ]
 
 
-# TODO: test minify_to_text
+def test_minify_to_text(dependency):
+    minify = minifier.Minifier()
+    text = minify.minify_to_text('./dirs/static/css/main.css')
+
+    assert text == '.home.title{text-size:2rem}'
+    assert LOG == [
+        ['open', (Path('dirs/static/css/main.css'),), {}],
+        ['read', 'main.css'],
+        ['post', ('https://cssminifier.com/raw',),
+         {'data': {'input': b'.home.title {\n'
+                            b'    text-size: 2rem\n'
+                            b'}\n'}}]
+    ]

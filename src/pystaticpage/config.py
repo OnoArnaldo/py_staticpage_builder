@@ -1,6 +1,7 @@
 import typing as _t
 import yaml as _yaml
 import dataclasses as _dc
+import os as _os
 
 
 class MissingConfigKey(Exception): pass
@@ -16,6 +17,10 @@ class DictData(dict):
 
         if default is None and not data:
             raise MissingConfigKey(f'Configuration key {item!r} is mandatory.')
+
+        if isinstance(data, str) and data.startswith('$ENV:'):
+            key_env = data[5:]
+            data = _os.environ.get(key_env)
 
         return data or default
 

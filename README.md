@@ -88,6 +88,16 @@ config:
       aws_secret_access_key: the_secret
 ```
 
+> The values can be a reference to environment variable.
+> 
+> Example:
+> 
+>     cdn:
+>         aws_access_key: "$ENV:STATIC_ACCESS_KEY"
+>         aws_secret_access_key: "$ENV:STATIC_SECRET_KEY"
+> 
+> It will get the value from variable key `STATIC_ACCESS_KEY`.
+
 ## Templates and pages
 
 The templates work exactly the way is in jinja [documentation](https://jinja2docs.readthedocs.io/en/stable/).
@@ -202,25 +212,26 @@ Or something like:
     ...
 ```
 
-## Functions
+## Global variables and functions
 
-There few functions that can be used in the templates.
+There few variables and functions that can be used in the templates.
 
-* url_home(): get the value in the configuration file.
-* url_static(): get the value in the configuration file.
+* url_home: get the `home` value in the configuration file.
+* url_static: get the `static` value in the configuration file.
+* url_cdn: get the value `cdn` in the configuration file.
 * current_year(): get current year (useful for copyright).
 
 Example:
 
 ```html
 ...
-<h1>{{ url_home() }}</h1>
+<h1>{{ url_home }}</h1>
 
 <div class="somewhere-in-footer">
   <p class="subtitle">&copy; {{ current_year() }} My company. All right reserved.</p>
 </div>
 
-<img src="{{ url_static() }}/image.jpg">
+<img src="{{ url_static }}/image.jpg">
 ...
 ```
 
@@ -233,39 +244,8 @@ You will have to create a script to execute the builder.
 The script below should do the trick.
 
 ```python
-from pystaticpage import load_config, create_builder
-
-
-def main():
-    config = load_config('./dirs/config.yaml')
-    builder = create_builder(config)
-    builder.run()
-
-
-if __name__ == '__main__':
-    main()
-```
-
-You can override the parameters which were set in the config file as below.
-
-```python
-builder.run(clean=True, build_pages=True,
-            build_static=True, build_sass=True, sass_output_style='nested',
-            minify_extensions=['.css', '.js'], only_index_page=True, skip_for_index=[])
-```
-
-Then just execute the script to build the static site.
-
-```commandline
-venv/bin/python build.py
-```
-
-### build.py file with injected functions to be used in templates
-
-You can inject functions to be used in the templates as below.
-
-```python
-from pystaticpage import load_config, create_builder
+from pathlib import Path
+from pystaticpage import create_builder
 import datetime
 
 
@@ -274,13 +254,19 @@ def utc_now():
 
 
 def main():
-    config = load_config('./dirs/config.yaml', template_methods={'utc_now': utc_now})
+    config = Path('./dirs/config.yaml')
     builder = create_builder(config)
-    builder.run()
+    builder.run(template_methods={'utc_now': utc_now})
 
 
 if __name__ == '__main__':
     main()
+```
+
+Then just execute the script to build the static site.
+
+```commandline
+venv/bin/python build.py
 ```
 
 In the template, you can call the method as below.
