@@ -8,11 +8,9 @@ def iter_files(root: _t.Union[str, _Path]) -> _t.Generator:
     if isinstance(root, str):
         root = _dep.path_class(root)
 
-    if root.is_file():
-        yield root
-    else:
-        for path in root.iterdir():
-            yield from iter_files(path)
+    for path in root.glob('**/*'):
+        if path.is_file():
+            yield path
 
 
 def save_content(dest: _Path, content: str) -> _t.NoReturn:
