@@ -235,7 +235,19 @@ Example:
 ...
 ```
 
-> The idea is to implement a way to add functions.
+> It is possible to add custom functions in the build file.
+
+## YAML custom tags
+
+It is possible to add custom tags to be used in YAML.
+
+Example:
+
+```yaml
+company: !parseCompany ['The Company', '+123 4567-8901']
+```
+
+> `!parseCompany` has to be implemented in the build file.
 
 ## build.py file
 
@@ -247,8 +259,16 @@ The script below should do the trick.
 from pathlib import Path
 from pystaticpage import create_builder
 import datetime
+import yaml
 
+# YAML custom tag
+def yaml_parse_company(loader: yaml.Loader, node: yaml.Node):
+    value = loader.construct_sequence(node)
+    return {'name': value[0], 'phone': value[1]}
 
+yaml.add_constructor('!parseCompany', yaml_parse_company, yaml.SafeLoader)
+
+# Jinja custom function
 def utc_now():
     return datetime.datetime.utcnow().strftime('%Y%m%d-%H%M%S')
 
