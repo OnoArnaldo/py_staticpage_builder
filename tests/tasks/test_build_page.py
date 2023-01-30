@@ -113,7 +113,7 @@ def test_build_page(dependency, dirs, urls):
         ['read', 'company.yaml'],
         ['utils_save_content', (),
          {
-             'content': ('\nContact: 1234.5678\n'
+             'content': ('Contact: 1234.5678\n'
                          'home: https://my-home.com\n'
                          'static: /static\n'
                          'cdn: https://cdn.my-home.com\n'
@@ -166,7 +166,7 @@ def test_build_page_without_gzip(dependency, dirs, urls):
         ['read', 'company.yaml'],
         ['utils_save_content', (),
          {
-             'content': ('\nContact: 1234.5678\n'
+             'content': ('Contact: 1234.5678\n'
                          'home: https://my-home.com\n'
                          'static: /static\n'
                          'cdn: https://cdn.my-home.com\n'
@@ -217,7 +217,7 @@ def test_build_page_without_minify(dependency, dirs, urls):
         ['read', 'company.yaml'],
         ['utils_save_content', (),
          {
-             'content': ('\nContact: 1234.5678\n'
+             'content': ('Contact: 1234.5678\n'
                          'home: https://my-home.com\n'
                          'static: /static\n'
                          'cdn: https://cdn.my-home.com\n'

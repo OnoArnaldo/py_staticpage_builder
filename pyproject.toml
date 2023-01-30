@@ -1,0 +1,29 @@
+[project]
+name = "py_staticpage_builder"
+version = "2023.01.30.0"
+description = "Static page generator."
+readme = "README.md"
+requires-python = "~=3.11"
+license = {file = "LICENSE"}
+authors = [{name = "Arnaldo Ono", email = "programmer@onoarnaldo.com"}]
+keywords = ["static page", "builder"]
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Intended Audience :: Developers",
+    "Natural Language :: English",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Software Development :: Code Generators"
+]
+dependencies = ["markdown", "PyYAML", "Jinja2", "requests", "libsass", "boto3"]
+
+[project.optional-dependencies]
+test = ["pytest"]
+
+[project.urls]
+#homepage = "https://example.com"
+#documentation = "https://readthedocs.org"
+repository = "https://github.com/OnoArnaldo/py_staticpage_builder"
+#changelog = "https://github.com/me/spam/blob/master/CHANGELOG.md"
+
+#[tool.setuptools]
+#packages = ["my_package"]

@@ -263,6 +263,8 @@ class TaskBuildPage(TaskBase, MinifierMixin, GziperMixin):
         env = _jinja.Environment(
             loader=_dep.jinja_loader_class([self._dirs.templates, self._dirs.pages]),
             autoescape=_jinja.select_autoescape(['html', 'xml']),
+            trim_blocks=True,
+            lstrip_blocks=True
         )
 
         env.globals['url_home'] = self._urls.home
@@ -289,11 +291,16 @@ class TaskBuildPage(TaskBase, MinifierMixin, GziperMixin):
     def _execute_html(self, orig: _Path) -> _Path:
         template_name = self.relative_path(orig)
         parser = _dep.html_parser_class(self._build_env())
+        content = parser(template_name=str(template_name))
 
         dest = self._file_name(_dep.path_class(self._dirs.site, template_name))
+
+        if self.can_generate_minify(dest):
+            content = '\n'.join(_dep.minify_html(content.splitlines()))
+
         _dep.utils_save_content(
             dest=dest,
-            content=parser(template_name=str(template_name))
+            content=content
         )
 
         return dest
@@ -328,9 +335,9 @@ class TaskBuildPage(TaskBase, MinifierMixin, GziperMixin):
 
                 if suffix == '.html':
                     dest = self._execute_html(f)
-                elif suffix == '.md':
+                if suffix == '.md':
                     dest = self._execute_markdown(f)
-                else:
+                elif suffix != '.html':
                     dest = self._execute_others(f)
 
                 self.execute_minify(dest, True)

@@ -11,7 +11,7 @@ class Minifier:
     CSS = 'https://cssminifier.com/raw'
     JS = 'https://javascript-minifier.com/raw'
 
-    EXTENSIONS = ('.html', '.css', '.js')
+    EXTENSIONS = ('.css', '.js')
 
     def __init__(self):
         self._current_file: _Path = None

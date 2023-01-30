@@ -18,6 +18,7 @@ class Dependency:
                  utils_clean_folder: _t.Callable = None,
                  md5: _t.Callable = None,
                  minify: _t.Callable = None,
+                 minify_html: _t.Callable = None,
                  time: _t.Callable = None,
                  sass_compile: _t.Callable = None,
                  boto_session: _t.Callable = None,
@@ -42,6 +43,7 @@ class Dependency:
         self._gzip_open = gzip_open
         self._gzip_compress = gzip_compress
         self._minify = minify
+        self._minify_html = minify_html
         self._time = time
         self._sass_compile = sass_compile
         self._boto_session = boto_session
@@ -150,6 +152,11 @@ class Dependency:
     def minify(self):
         from . import minifier
         return self._minify or minifier.Minifier()
+
+    @property
+    def minify_html(self):
+        from . import minifyhtml
+        return self._minify_html or minifyhtml.minify
 
     @property
     def time(self):
