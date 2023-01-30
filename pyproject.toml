@@ -1,6 +1,6 @@
 [project]
 name = "py_staticpage_builder"
-version = "2023.01.30.2"
+version = "2023.01.30.3"
 description = "Static page generator."
 readme = "README.md"
 requires-python = "~=3.11"
