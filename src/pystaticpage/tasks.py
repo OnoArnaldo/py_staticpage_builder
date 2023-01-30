@@ -340,7 +340,6 @@ class TaskBuildPage(TaskBase, MinifierMixin, GziperMixin):
                 elif suffix != '.html':
                     dest = self._execute_others(f)
 
-                self.execute_minify(dest, True)
                 self.execute_gzip(dest)
 
 

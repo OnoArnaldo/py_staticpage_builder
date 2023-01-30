@@ -106,7 +106,6 @@ def test_build_page(dependency, dirs, urls):
                          '<h4>email: email@email.com</h4>'),
              'dest': Path('dirs/sites/index.html')
          }],
-        ['minify', (Path('dirs/sites/index.html'), ), {'overwrite': True}],
         ['utils_gzip_file', (Path('dirs/sites/index.html'),), {}],
         ['get_source', Ignore, 'contact.html'],
         ['open', (Path('dirs/data/company.yaml'),), {}],
@@ -120,7 +119,6 @@ def test_build_page(dependency, dirs, urls):
                          'year: 2021'),
              'dest': Path('dirs/sites/contact/index.html')
          }],
-        ['minify', (Path('dirs/sites/contact/index.html'), ), {'overwrite': True}],
         ['utils_gzip_file', (Path('dirs/sites/contact/index.html'),), {}],
         ['get_source', Ignore, 'help.html'],
         ['utils_save_content', (), {'content': 'TITLE: \n', 'dest': Path('dirs/sites/help.html')}],
@@ -160,7 +158,6 @@ def test_build_page_without_gzip(dependency, dirs, urls):
                          '<h4>email: email@email.com</h4>'),
              'dest': Path('dirs/sites/index.html')
          }],
-        ['minify', (Path('dirs/sites/index.html'), ), {'overwrite': True}],
         ['get_source', Ignore, 'contact.html'],
         ['open', (Path('dirs/data/company.yaml'),), {}],
         ['read', 'company.yaml'],
@@ -173,7 +170,6 @@ def test_build_page_without_gzip(dependency, dirs, urls):
                          'year: 2021'),
              'dest': Path('dirs/sites/contact/index.html')
          }],
-        ['minify', (Path('dirs/sites/contact/index.html'), ), {'overwrite': True}],
         ['get_source', Ignore, 'help.html'],
         ['utils_save_content', (), {'content': 'TITLE: \n', 'dest': Path('dirs/sites/help.html')}],
         ['get_source', Ignore, 'private/gallery.html'],

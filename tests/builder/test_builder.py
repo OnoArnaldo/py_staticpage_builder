@@ -89,42 +89,7 @@ def test_builder(dependency):
     # TODO: add methods into templates
 
     assert LOG == [
-        ['request post', ('https://html-minifier.com/raw',), {
-            'data': {'input': '<!DOCTYPE html>\n'
-                              '<html lang="en">\n'
-                              '<head>\n'
-                              '    <meta charset="UTF-8">\n'
-                              '    <title>How to build static page</title>\n'
-                              '</head>\n'
-                              '<body>\n'
-                              '    <h1>How to build static page</h1>\n'
-                              '    <pre><h1>Title 1</h1>\n'
-                              '<h2>Subtitle</h2>\n'
-                              '<ul>\n'
-                              '<li>item 1</li>\n'
-                              '<li>item 2</li>\n'
-                              '<li>item 3</li>\n'
-                              '</ul></pre>\n'
-                              '</body>\n'
-                              '</html>'}}],
         ['parse_date', ('0000',), {}],
-        ['request post', ('https://html-minifier.com/raw',), {
-            'data': {'input': '<!DOCTYPE html>\n'
-                              '<html lang="en">\n'
-                              '<head>\n'
-                              '<meta charset="UTF-8">\n'
-                              '<title></title>\n'
-                              '</head>\n'
-                              '<body>\n'
-                              '<h1>The main page</h1>\n'
-                              '<h2>The company name</h2>\n'
-                              '<p>11112222</p>\n'
-                              '<p>https://home-page.com</p>\n'
-                              '<p>/static</p>\n'
-                              '<p>https://cdn.home-page.com/root</p>\n'
-                              '<p>2021-11-01</p>\n'
-                              '</body>\n'
-                              '</html>'}}],
         ['request post', ('https://cssminifier.com/raw',), {
             'data': {'input': '.contact {\n'
                               '  background-color: black;\n'
