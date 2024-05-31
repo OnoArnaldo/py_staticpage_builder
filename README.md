@@ -2,14 +2,16 @@
 
 A very simple static site generator which works with markdown files, jinja templates and Andrew Chilton's minifiers.
 
+
 # Installation
 
 ```commandline
-python3.10 -m venv venv
-source venv/bin/activate
+python3.12 -m venv .venv
+source .venv/bin/activate
 pip install --upgrade pip
 pip install git+https://github.com/OnoArnaldo/py_staticpage_builder.git
 ```
+
 
 # Usage
 
@@ -17,11 +19,10 @@ First you will need to build the project structure, I recommend the structure be
 
 ```text
 .
-├── dirs
-│   ├── config.yaml     --> configuration file used to build the site.
-│   ├── _sites/         --> the static site will be built here, this folder will be created if not exists.
-│   ├── data/           --> yaml files with data that can be used in the templates.
-│   ├── pages/          --> html or markdow files to be transformed into static pages.
+├── _sites/             --> the static site will be built here, this folder will be created if not exists.
+├── web
+│   ├── data/           --> toml files with data that can be used in the templates.
+│   ├── pages/          --> html or markdown files to be transformed into static pages.
 │   ├── static/         --> all the assets you want to use in the templates, the files will be copied to _sites.
 │   ├── sass/           --> all sass and scss files, this will be compiled and saved in _sites/static/css/.
 │   ├── cdn/            --> all files that will be uploaded to the cdn server.
@@ -29,283 +30,77 @@ First you will need to build the project structure, I recommend the structure be
 └── build.py            --> script to execute the builder.
 ```
 
-You can find an example in the `tests` folder.
-
-## Configuration File
-
-Below is all the values that can be used in the configuration file.
-
-```yaml
-config:
-  dirs:     # the folder structure used for your project
-    sites: ./dirs/_sites
-    pages: ./dirs/pages
-    templates: ./dirs/templates
-    static: ./dirs/static
-    cdn: ./dirs/cdn
-    data: ./dirs/data
-    sass: ./dirs/sass
-  urls:     # url used in your templates, more details below
-    home: https://home-page.com
-    static: /static
-    cdn: https://cdn.home-page.com/root
-  builder:  # parameters for the builder
-    clean_before_build: true  # delete dirs._sites before building
-    pages:
-      execute: true
-      only_index: false     # if set to TRUE, it will generate index.html for all the pages
-                                # (this will remove the trailing .html). Default: false
-      skip_for_index:           # list of files that will not be turned into index.html
-        - file_name_pattern     # the name is a regex pattern
-        - ...
-    static:
-      execute: true
-    minify:
-      execute: true
-      extensions: ['.html', '.js', '.css']
-      skip_files:
-        - .*min\.\w+
-      skip_dirs:
-        - cdn
-    sass:
-      execute: true
-      output_style: nested      # check the link for the option https://sass.github.io/libsass-python/sass.html?highlight=sass%20syntax#sass.compile
-                                # Default: nested
-      destination: static       # choose the destination, it can be either `cdn` or `static`. Default: static
-    gzip:
-      execute: true
-      extensions: [.css, .js]   # choose the extensions that will be compressed. Default: []
-      skip_files:
-        - main.js
-    cdn:                      # configuration to integrate with the CDN
-      execute: true
-      service_name: servname
-      region_name: regname
-      bucket_name: bucname
-      object_key_prefix: keyprefix      # in case the files will be inside a folder in CDN
-      endpoint: "https://the-url.com"
-      aws_access_key: the_key
-      aws_secret_access_key: the_secret
-```
-
-> The values can be a reference to environment variable.
-> 
-> Example:
-> 
->     cdn:
->         aws_access_key: "$ENV:STATIC_ACCESS_KEY"
->         aws_secret_access_key: "$ENV:STATIC_SECRET_KEY"
-> 
-> It will get the value from variable key `STATIC_ACCESS_KEY`.
-
-## Templates and pages
-
-The templates work exactly the way is in jinja [documentation](https://jinja2docs.readthedocs.io/en/stable/).
-
-Pages can be a html (using jinja syntax) or a markdown file (see this [document](https://daringfireball.net/projects/markdown/syntax) for the syntax).
-
-#### Example of html page
-
-`templates/base.html`
-```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>{%block title%}TheTile{% endblock %}</title>
-</head>
-<body>
-{% block body %}{% endblock %}
-</body>
-</html>
-```
-
-`pages/index.html`
-```html
-{% extends 'base.html' %}
-
-{% block title %}This is HOME{% endblock %}
-
-{% block body %}
-  <h1>This is the home page</h1>
-{% endblock %}
-```
-
-> Note that we are simply using jinja syntax.
-
-
-#### Example of markdown page
-
-`templates/blog_template.html`
-```html
-{% extends 'base.html' %}
-
-{% block title %}Blog - {{ title }}{% endblock %}
-
-{% block body %}
-  <h1>blog - {{ title }}</h1>
-  <pre>{{ content|safe }}</pre>
-{% endblock %}
-```
-
-> markdown content will replace the variable `content`.
-
-> `content` needs to use the filter `safe` to parse properly.
-
-`pages/blog/20200101.md`
-```markdown
-template: blog_template.html
-title: First thoughts
-
-# This is the header {: .title #main-title}
-
-* item 1
-* item 2
-* item 3
-```
-
-> note that the header contains key-value pairs will be sent to the template.
-
-> template key is mandatory.
-
-> html attribute can be added using {: .class_attribute #id_attribute}.
-
-## Data files
-
-`data/company.yml`
-```yaml
-name: Company ABC
-contacts:
-    - type: email
-      value: contact@email.com
-    - type: phone
-      value: 1234 5678
-address:
-    delivery:
-        street: ABC Street
-        number: 1000
-        country: ABCD
-```
-
-`pages/about.html`
-```html
-{% extends 'base.html' %}
-{{ set company = data('company') }}
-
-{% block title %}About - {{ company.name }}{% endblock %}
-
-{% block body %}
-  {% for contact in company.contacts %}
-    <p>{{ contact.type }}: {{ contact.value }}</p>
-  {% endfor %}
-{% endblock %}
-```
-
-Or something like:
-```html
-    ...
-    {{ set address = data('company', 'address/delivery') }}
-
-    <p>{{ address.street }}</p>
-    <p>{{ address.number }}</p>
-    <p>{{ address.country }}</p>
-    ...
-```
-
-## Global variables and functions
-
-There few variables and functions that can be used in the templates.
-
-* url_home: get the `home` value in the configuration file.
-* url_static: get the `static` value in the configuration file.
-* url_cdn: get the value `cdn` in the configuration file.
-* current_year(): get current year (useful for copyright).
-
-Example:
-
-```html
-...
-<h1>{{ url_home }}</h1>
-
-<div class="somewhere-in-footer">
-  <p class="subtitle">&copy; {{ current_year() }} My company. All right reserved.</p>
-</div>
-
-<img src="{{ url_static }}/image.jpg">
-...
-```
-
-> It is possible to add custom functions in the build file.
-
-## YAML custom tags
-
-It is possible to add custom tags to be used in YAML.
-
-Example:
-
-```yaml
-company: !parseCompany ['The Company', '+123 4567-8901']
-```
-
-> `!parseCompany` has to be implemented in the build file.
-
-## build.py file
-
-You will have to create a script to execute the builder.
-
-The script below should do the trick.
+## Sample for `build.py`
 
 ```python
+#!.venv/bin/python
+from datetime import datetime, UTC
 from pathlib import Path
-from pystaticpage import create_builder
-import datetime
-import yaml
+from staticpage import Build
 
-# YAML custom tag
-def yaml_parse_company(loader: yaml.Loader, node: yaml.Node):
-    value = loader.construct_sequence(node)
-    return {'name': value[0], 'phone': value[1]}
+ROOT = Path(__file__).parent
 
-yaml.add_constructor('!parseCompany', yaml_parse_company, yaml.SafeLoader)
-
-# Jinja custom function
-def utc_now():
-    return datetime.datetime.utcnow().strftime('%Y%m%d-%H%M%S')
-
-
-def main():
-    config = Path('./dirs/config.yaml')
-    builder = create_builder(config)
-    builder.run(template_methods={'utc_now': utc_now})
-
+def current_year() -> str:
+    return str(datetime.now(UTC).year)
 
 if __name__ == '__main__':
-    main()
+    Build(
+        ROOT / 'web' / 'pages',
+        ROOT / 'web' / 'data',
+        ROOT / 'web' / 'templates',
+        ROOT / 'web' / 'static',
+        ROOT / 'web' / 'sass',
+        ROOT / '_site',
+    ).register_globals(
+        current_year=current_year
+    ).build()
 ```
 
-Then just execute the script to build the static site.
+## Pages
 
-```commandline
-venv/bin/python build.py
-```
+### Pages with html
 
-In the template, you can call the method as below.
+> It uses jinja2 to parse the files
+
+The tag `markdown` was created to allow the use of markdown inside the templates.
+
+File `example.html`
 
 ```html
-<p>{{ utc_now() }}</p>
+{% extends 'base.html' %}
+
+{% block body %}
+  {% markdown %}
+    variable: value
+
+    # The title
+    ## The subtitle
+    
+    The variable is ${variable}.
+  {% endmarkdown %}
+{% endblock %}
 ```
 
-# Development
+### Pages with markdown
 
-## Installation
+> The markdown content will be placed in `{{ content }}`.
 
-```commandline
-pip install -e .
+File `base_md.html`.
+
+```html
+{% extends 'base.html' %}
+
+{% block body %}
+  {{ content }}
+{% endblock %}
 ```
 
-## Run Test
+File `sample.md`.
 
-```commandline
-pip install '.[test]'
-pytest
+```markdown
+extends: base_md.html
+title: The Title
+
+# Subject
+## Topic 1: ${title}
 ```

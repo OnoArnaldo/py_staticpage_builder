@@ -1,0 +1,4 @@
+<START>
+{% block body %}
+{% endblock %}
+<END>

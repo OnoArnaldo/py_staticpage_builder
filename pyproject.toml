@@ -1,9 +1,9 @@
 [project]
 name = "py_staticpage_builder"
-version = "2023.01.30.3"
+version = "2024.05.31.1"
 description = "Static page generator."
 readme = "README.md"
-requires-python = "~=3.11"
+requires-python = "~=3.12"
 license = {file = "LICENSE"}
 authors = [{name = "Arnaldo Ono", email = "programmer@onoarnaldo.com"}]
 keywords = ["static page", "builder"]
@@ -11,13 +11,10 @@ classifiers = [
     "Development Status :: 2 - Pre-Alpha",
     "Intended Audience :: Developers",
     "Natural Language :: English",
-    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "Topic :: Software Development :: Code Generators"
 ]
-dependencies = ["markdown", "PyYAML", "Jinja2", "requests", "libsass", "boto3"]
-
-[project.optional-dependencies]
-test = ["pytest"]
+dynamic = ["dependencies", "optional-dependencies"]
 
 [project.urls]
 #homepage = "https://example.com"
@@ -25,5 +22,16 @@ test = ["pytest"]
 repository = "https://github.com/OnoArnaldo/py_staticpage_builder"
 #changelog = "https://github.com/me/spam/blob/master/CHANGELOG.md"
 
-#[tool.setuptools]
-#packages = ["my_package"]
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements/prod.txt"]}
+optional-dependencies.test = { file = ["requirements/dev.txt"] }
+
+[tool.pip-tools]
+generate-hashes = true
+strip-extras = true
+
+[project.scripts]
+staticpage = "staticpage:main"
+
+[tool.ruff.format]
+quote-style = "single"
