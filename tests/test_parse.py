@@ -44,8 +44,8 @@ def test_parse(parser):
 
 
 def test_parse_add_filter(parser):
-    parser.register_filter('sample', lambda x: f'<<{x}>>')
-    assert parser.render('template_filter', title='The title') == '!! <<The title>> !!'
+    parser.register_filter('sample', lambda x: f'[[{x}]]')
+    assert parser.render('template_filter', title='The title') == '!! [[The title]] !!'
 
 
 def test_parse_add_globals(parser):
@@ -58,11 +58,11 @@ def test_parse_add_globals(parser):
 
 def test_parse_with_markdown_tag(parser):
     assert parser.render('with_markdown', title='The title') == (
-        '<h1>The title</h1>\n<h2>The Name Another Name</h2>'
+        '<h1>The title</h1><h2>The Name Another Name</h2>'
     )
 
 
 def test_parse_full_markdown(parser):
     assert parser.render('full_markdown.md', title='The title') == (
-        'START\n<ul>\n<li>The title</li>\n<li>The Name</li>\n</ul>\nEND'
+        'START <ul><li>The title<li>The Name</ul> END'
     )

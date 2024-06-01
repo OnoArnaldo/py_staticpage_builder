@@ -6,8 +6,9 @@ from textwrap import dedent
 from jinja2 import Environment, FileSystemLoader, select_autoescape, nodes
 from jinja2.ext import Extension
 from markdown import Markdown
+from minify_html import minify
 
-if _.TYPE_CHECKING:
+if _.TYPE_CHECKING:  # pragma: no cover
     from jinja2 import Template as JinjaTemplate
     from jinja2.runtime import Macro
 
@@ -40,7 +41,8 @@ class MarkdownExtension(Extension):
 class Parser:
     def __init__(self, template_dir: str | Path | _.Sequence[str | Path]):
         self.env = Environment(
-            loader=FileSystemLoader(template_dir), autoescape=select_autoescape()
+            loader=FileSystemLoader(template_dir),
+            autoescape=select_autoescape(),
         )
         self.env.add_extension('staticpage.parse.MarkdownExtension')
 
@@ -55,7 +57,7 @@ class Parser:
                 template: JinjaTemplate = self.env.get_template(meta['extends'])
                 result = template.render(content=result, **{**context, **meta})
 
-        return result
+        return minify(result)
 
     def register_filter(self, name: str, filter: _.Callable) -> None:
         self.env.filters[name] = filter

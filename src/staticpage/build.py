@@ -32,10 +32,15 @@ class Build:
         self.filters: dict[str, _.Any] = {}
         self.globals: dict[str, _.Any] = {}
 
-    def build(self) -> None:
+    def build(self, *, clean: bool = False) -> None:
+        if clean:
+            self.clean_output_dir()
         self.build_sites()
         self.build_static()
         self.build_sass()
+
+    def clean_output_dir(self) -> None:
+        shutil.rmtree(self.output_dir, ignore_errors=True)
 
     def build_sites(self) -> None:
         data = Data(self.data_dir)
