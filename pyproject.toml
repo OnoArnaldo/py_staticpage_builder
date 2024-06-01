@@ -4,8 +4,8 @@ version = "2024.05.31.1"
 description = "Static page generator."
 readme = "README.md"
 requires-python = "~=3.12"
-license = {file = "LICENSE"}
-authors = [{name = "Arnaldo Ono", email = "programmer@onoarnaldo.com"}]
+license = { file = "LICENSE" }
+authors = [{ name = "Arnaldo Ono", email = "programmer@onoarnaldo.com" }]
 keywords = ["static page", "builder"]
 classifiers = [
     "Development Status :: 2 - Pre-Alpha",
@@ -14,17 +14,26 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
     "Topic :: Software Development :: Code Generators"
 ]
-dynamic = ["dependencies", "optional-dependencies"]
+dependencies = [
+    "jinja2==3.1.4",
+    "libsass==0.23.0",
+    "click==8.1.7",
+    "markdown==3.6",
+    "minify-html==0.15.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest==8.2.1",
+    "coverage==7.5.2",
+    "ruff==0.4.5",
+]
 
 [project.urls]
 #homepage = "https://example.com"
 #documentation = "https://readthedocs.org"
 repository = "https://github.com/OnoArnaldo/py_staticpage_builder"
 #changelog = "https://github.com/me/spam/blob/master/CHANGELOG.md"
-
-[tool.setuptools.dynamic]
-dependencies = {file = ["requirements/prod.txt"]}
-optional-dependencies.test = { file = ["requirements/dev.txt"] }
 
 [tool.pip-tools]
 generate-hashes = true
