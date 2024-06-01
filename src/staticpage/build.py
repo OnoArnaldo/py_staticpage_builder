@@ -20,6 +20,7 @@ class Build:
         templates_dir: DirPath,
         static_dir: DirPath,
         sass_dir: DirPath,
+        sass_modules_dir: DirPath,
         output_dir: DirPath,
     ) -> None:
         self.sites_dir = sites_dir
@@ -27,6 +28,7 @@ class Build:
         self.templates_dir = templates_dir
         self.static_dir = static_dir
         self.sass_dir = sass_dir
+        self.sass_modules_dir = sass_modules_dir
         self.output_dir = output_dir
 
         self.filters: dict[str, _.Any] = {}
@@ -72,7 +74,9 @@ class Build:
     def build_sass(self) -> None:
         output_dir = Path(self.output_dir) / 'static'
         sass.compile(
-            dirname=(self.sass_dir, str(output_dir / 'css')), output_style='compressed'
+            dirname=(self.sass_dir, str(output_dir / 'css')),
+            include_paths=str(self.sass_modules_dir),
+            output_style='compressed',
         )
 
     def build_static(self) -> None:

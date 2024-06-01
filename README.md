@@ -25,6 +25,7 @@ First you will need to build the project structure, I recommend the structure be
 │   ├── pages/          --> html or markdown files to be transformed into static pages.
 │   ├── static/         --> all the assets you want to use in the templates, the files will be copied to _sites.
 │   ├── sass/           --> all sass and scss files, this will be compiled and saved in _sites/static/css/.
+│   ├── sass_modules/   --> all sass modules to be used with import, this will not be compiled.
 │   ├── cdn/            --> all files that will be uploaded to the cdn server.
 │   └── templates/      --> templates using jinja syntax.
 └── build.py            --> script to execute the builder.
