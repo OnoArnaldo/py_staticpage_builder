@@ -31,7 +31,7 @@ def clean_dir():
 def build() -> Build:
     add_dirty_to_output()
     OUT.mkdir(exist_ok=True)
-    yield Build(PAGES, DATA, TEMPLATES, STATIC, SASS, SASS_MODULES, OUT)
+    yield Build(PAGES, DATA, TEMPLATES, STATIC, SASS, OUT)
     clean_dir()
 
 
@@ -47,12 +47,13 @@ def test_build(build):
     assert (OUT / 'blog' / 'day-abc' / 'index.html').read_text() == (
         'START The Title <ul><li>line 1<li>line 2</ul> END'
     )
-    assert (
-        OUT / 'static' / 'css' / 'home.css'
-    ).read_text() == 'body{background-color:aqua}\n'
-    assert (
-        OUT / 'static' / 'js' / 'site.js'
-    ).read_text() == "console.info('OK');\n\nconsole.warn('NOK');"
-    assert (
-        OUT / 'static' / 'js' / 'site.min.js'
-    ).read_text() == "console.info('OK'); console.warn('NOK');"
+
+    assert (OUT / 'static' / 'css' / 'home.css'
+            ).read_text() == 'body {\n  background-color: aqua;\n}\n\n/*# sourceMappingURL=home.css.map */\n'
+    assert (OUT / 'static' / 'css' / 'home.min.css'
+            ).read_text() == 'body{background-color:aqua}/*# sourceMappingURL=home.min.css.map */\n'
+
+    assert (OUT / 'static' / 'js' / 'site.js'
+            ).read_text() == "console.info('OK');\n\nconsole.warn('NOK');"
+    assert (OUT / 'static' / 'js' / 'site.min.js'
+            ).read_text() == "console.info('OK'); console.warn('NOK');"

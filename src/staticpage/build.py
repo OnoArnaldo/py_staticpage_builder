@@ -1,15 +1,18 @@
 import shutil
 import typing as _
+import subprocess
 from pathlib import Path
 
 import minify_html as minify
-import sass
 
 from . import utils
 from .data import Data
 from .parse import Parser
 
 type DirPath = Path | str
+
+ROOT = Path(__file__).parent
+SASS = ROOT / 'libs' / 'sass'
 
 
 class Build:
@@ -20,7 +23,6 @@ class Build:
         templates_dir: DirPath,
         static_dir: DirPath,
         sass_dir: DirPath,
-        sass_modules_dir: DirPath,
         output_dir: DirPath,
     ) -> None:
         self.sites_dir = sites_dir
@@ -28,7 +30,6 @@ class Build:
         self.templates_dir = templates_dir
         self.static_dir = static_dir
         self.sass_dir = sass_dir
-        self.sass_modules_dir = sass_modules_dir
         self.output_dir = output_dir
 
         self.filters: dict[str, _.Any] = {}
@@ -72,12 +73,19 @@ class Build:
             (dest / 'index.html').write_text(html)
 
     def build_sass(self) -> None:
-        output_dir = Path(self.output_dir) / 'static'
-        sass.compile(
-            dirname=(self.sass_dir, str(output_dir / 'css')),
-            include_paths=str(self.sass_modules_dir),
-            output_style='compressed',
-        )
+        output_dir = Path(self.output_dir) / 'static' / 'css'
+        sass_dir = Path(self.sass_dir)
+
+        for fpath in sass_dir.rglob('*.scss'):
+            dest = (output_dir / fpath.relative_to(sass_dir)).with_suffix('.css')
+            dest.parent.mkdir(parents=True, exist_ok=True)
+
+            try:
+                subprocess.run([str(SASS), str(fpath), str(dest)], capture_output=True)
+                subprocess.run([str(SASS), '--style=compressed', str(fpath), str(dest.with_stem(f'{dest.stem}.min'))],
+                               capture_output=True)
+            except subprocess.CalledProcessError:
+                pass
 
     def build_static(self) -> None:
         static_dir = Path(self.static_dir)

@@ -1,6 +1,6 @@
 [project]
 name = "py_staticpage_builder"
-version = "2024.06.01.2"
+version = "2024.06.04.1"
 description = "Static page generator."
 readme = "README.md"
 requires-python = "~=3.12"
@@ -38,9 +38,6 @@ repository = "https://github.com/OnoArnaldo/py_staticpage_builder"
 [tool.pip-tools]
 generate-hashes = true
 strip-extras = true
-
-[project.scripts]
-staticpage = "staticpage:main"
 
 [tool.ruff.format]
 quote-style = "single"
