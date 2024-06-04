@@ -13,7 +13,7 @@ DATA = WEB / 'data'
 TEMPLATES = WEB / 'templates'
 STATIC = WEB / 'static'
 SASS = WEB / 'sass'
-SASS_MODULES = WEB / 'sass_modules'
+SASS_BIN = ROOT / 'libs' / 'sass'
 
 OUT = ROOT / 'data' / '_sites'
 
@@ -31,7 +31,13 @@ def clean_dir():
 def build() -> Build:
     add_dirty_to_output()
     OUT.mkdir(exist_ok=True)
-    yield Build(PAGES, DATA, TEMPLATES, STATIC, SASS, OUT)
+    yield Build(sites_dir=PAGES,
+                data_dir=DATA,
+                templates_dir=TEMPLATES,
+                static_dir=STATIC,
+                sass_dir=SASS,
+                output_dir=OUT,
+                sass_bin=SASS_BIN)
     clean_dir()
 
 

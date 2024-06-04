@@ -11,19 +11,17 @@ from .parse import Parser
 
 type DirPath = Path | str
 
-ROOT = Path(__file__).parent
-SASS = ROOT / 'libs' / 'sass'
-
 
 class Build:
     def __init__(
-        self,
+        self, *,
         sites_dir: DirPath,
         data_dir: DirPath,
         templates_dir: DirPath,
         static_dir: DirPath,
         sass_dir: DirPath,
         output_dir: DirPath,
+        sass_bin: DirPath,
     ) -> None:
         self.sites_dir = sites_dir
         self.data_dir = data_dir
@@ -31,6 +29,7 @@ class Build:
         self.static_dir = static_dir
         self.sass_dir = sass_dir
         self.output_dir = output_dir
+        self.sass_bin = sass_bin
 
         self.filters: dict[str, _.Any] = {}
         self.globals: dict[str, _.Any] = {}
@@ -81,8 +80,8 @@ class Build:
             dest.parent.mkdir(parents=True, exist_ok=True)
 
             try:
-                subprocess.run([str(SASS), str(fpath), str(dest)], capture_output=True)
-                subprocess.run([str(SASS), '--style=compressed', str(fpath), str(dest.with_stem(f'{dest.stem}.min'))],
+                subprocess.run([str(self.sass_bin), str(fpath), str(dest)], capture_output=True)
+                subprocess.run([str(self.sass_bin), '--style=compressed', str(fpath), str(dest.with_stem(f'{dest.stem}.min'))],
                                capture_output=True)
             except subprocess.CalledProcessError:
                 pass

@@ -12,6 +12,11 @@ pip install --upgrade pip
 pip install git+https://github.com/OnoArnaldo/py_staticpage_builder.git
 ```
 
+## Install SASS
+
+Download the latest version of SASS (this project was tested with the stand alone version) 
+([link](https://github.com/sass/dart-sass/releases)).
+
 
 # Usage
 
@@ -46,12 +51,13 @@ def current_year() -> str:
 
 if __name__ == '__main__':
     Build(
-        ROOT / 'web' / 'pages',
-        ROOT / 'web' / 'data',
-        ROOT / 'web' / 'templates',
-        ROOT / 'web' / 'static',
-        ROOT / 'web' / 'sass',
-        ROOT / '_site',
+        sites_dir=ROOT / 'web' / 'pages',
+        data_dir=ROOT / 'web' / 'data',
+        templates_dir=ROOT / 'web' / 'templates',
+        static_dir=ROOT / 'web' / 'static',
+        sass_dir=ROOT / 'web' / 'sass',
+        output_dir=ROOT / '_site',
+        sass_bin=ROOT / 'libs' / 'sass'
     ).register_globals(
         current_year=current_year
     ).build()
