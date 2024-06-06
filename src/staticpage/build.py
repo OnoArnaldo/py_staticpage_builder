@@ -97,7 +97,7 @@ class Build:
         static_dir = Path(self.static_dir)
         output_dir = Path(self.output_dir) / 'static'
 
-        shutil.copytree(static_dir, output_dir)
+        shutil.copytree(static_dir, output_dir, dirs_exist_ok=True)
 
         self.minify_js()
 
