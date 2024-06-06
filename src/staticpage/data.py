@@ -27,7 +27,7 @@ class Data:
     def from_file(self, filename: str, load: _.Callable = None) -> DataDict:
         load = load or tomllib.load
 
-        with Path(filename).open('b') as f:
+        with Path(filename).open('rb') as f:
             data = load(f)
             return DataDict(data)
 
