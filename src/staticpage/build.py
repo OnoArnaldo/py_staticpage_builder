@@ -34,12 +34,19 @@ class Build:
         self.filters: dict[str, _.Any] = {}
         self.globals: dict[str, _.Any] = {}
 
-    def build(self, *, clean: bool = False) -> None:
+    def build(self, *,
+              clean: bool = False,
+              skip_sites: bool = False,
+              skip_static: bool = False,
+              skip_sass: bool = False) -> None:
         if clean:
             self.clean_output_dir()
-        self.build_sites()
-        self.build_static()
-        self.build_sass()
+        if not skip_sites:
+            self.build_sites()
+        if not skip_static:
+            self.build_static()
+        if not skip_sass:
+            self.build_sass()
 
     def clean_output_dir(self) -> None:
         shutil.rmtree(self.output_dir, ignore_errors=True)
