@@ -17,14 +17,14 @@ class Data:
         self.root = Path(data_dir)
 
     def __call__(self, filename: str) -> DataDict:
-        return self.from_file(f'{filename}.toml')
+        return self.from_file(self.root / f'{filename}.toml')
 
     def from_text(self, text: str, loads: _.Callable = None) -> DataDict:
         loads = loads or tomllib.loads
         data = loads(text)
         return DataDict(data)
 
-    def from_file(self, filename: str, load: _.Callable = None) -> DataDict:
+    def from_file(self, filename: str | Path, load: _.Callable = None) -> DataDict:
         load = load or tomllib.load
 
         with Path(filename).open('rb') as f:
