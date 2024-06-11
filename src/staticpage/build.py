@@ -104,6 +104,9 @@ class Build:
     def minify_js(self) -> None:
         js_dir = Path(self.output_dir) / 'static'
         for fpath in js_dir.rglob('*.js'):
+            if fpath.stem.endswith('.min'):
+                continue
+
             dest = Path(fpath).with_stem(f'{fpath.stem}.min')
 
             minified = minify.minify(fpath.read_text(), minify_js=True)
