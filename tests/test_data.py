@@ -92,4 +92,4 @@ def test_data_caller(data, fake_file):
     assert d['title'] == 'The Title'
     assert d['company']['name'] == 'The company'
     assert d['company']['address']['line1'] == 'The line 1'
-    assert fake_file.logs == ["('fakefile.toml',)", 'open']
+    assert fake_file.logs == ["(PosixPath('not-a-file/fakefile.toml'),)", 'open']

@@ -1,6 +1,6 @@
 [project]
 name = "py_staticpage_builder"
-version = "2024.06.11.1"
+version = "2024.06.11.2"
 description = "Static page generator."
 readme = "README.md"
 requires-python = "~=3.12"
@@ -16,7 +16,6 @@ classifiers = [
 ]
 dependencies = [
     "jinja2==3.1.4",
-    "libsass==0.23.0",
     "click==8.1.7",
     "markdown==3.6",
     "minify-html==0.15.0",
