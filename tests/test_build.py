@@ -38,7 +38,8 @@ def build() -> Build:
                 sass_dir=SASS,
                 output_dir=OUT,
                 sass_bin=SASS_BIN,
-                skip_parsing=['*.xml'])
+                skip_parsing=['*.xml'],
+                parse_keep_extension=['404.html'])
     clean_dir()
 
 
@@ -55,6 +56,7 @@ def test_build(build):
         'START The Title <ul><li>line 1<li>line 2</ul> END'
     )
     assert (OUT / 'sitemap.xml').read_text() == ('Do not change this!')
+    assert (OUT / '404.html').read_text() == ('<start> Parse and keep extension <end>')
 
     assert (OUT / 'static' / 'css' / 'home.css'
             ).read_text() == 'body {\n  background-color: aqua;\n}\n\n/*# sourceMappingURL=home.css.map */\n'

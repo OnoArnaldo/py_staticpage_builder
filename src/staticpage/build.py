@@ -22,7 +22,8 @@ class Build:
         sass_dir: DirPath,
         output_dir: DirPath,
         sass_bin: DirPath,
-        skip_parsing: _.Sequence[str] = None
+        skip_parsing: _.Sequence[str] = None,
+        parse_keep_extension: _.Sequence[str] = None,
     ) -> None:
         self.sites_dir = sites_dir
         self.data_dir = data_dir
@@ -32,12 +33,16 @@ class Build:
         self.output_dir = output_dir
         self.sass_bin = sass_bin
         self.skip_parsing = skip_parsing or []
+        self.parse_keep_extension = parse_keep_extension or []
 
         self.filters: dict[str, _.Any] = {}
         self.globals: dict[str, _.Any] = {}
 
     def _should_skip_parsing(self, path: Path) -> bool:
         return any(path.match(p) for p in self.skip_parsing)
+
+    def _should_keep_extension(self, path: Path) -> bool:
+        return any(path.match(p) for p in self.parse_keep_extension)
 
     def build(self, *,
               clean: bool = False,
@@ -82,13 +87,18 @@ class Build:
             else:
                 html = parser.render(str(site_name))
 
-                if fpath.stem == 'index':
-                    dest = Path(self.output_dir, site_name.parent)
+                if self._should_keep_extension(fpath):
+                    dest = Path(self.output_dir, site_name)
+                    dest.parent.mkdir(exist_ok=True)
+                    dest.write_text(html)
                 else:
-                    dest = Path(self.output_dir, site_name).with_suffix('')
+                    if fpath.stem == 'index':
+                        dest = Path(self.output_dir, site_name.parent)
+                    else:
+                        dest = Path(self.output_dir, site_name).with_suffix('')
 
-                dest.mkdir(exist_ok=True, parents=True)
-                (dest / 'index.html').write_text(html)
+                    dest.mkdir(exist_ok=True, parents=True)
+                    (dest / 'index.html').write_text(html)
 
     def build_sass(self) -> None:
         output_dir = Path(self.output_dir) / 'static' / 'css'
