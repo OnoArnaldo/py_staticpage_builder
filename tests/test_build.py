@@ -37,7 +37,8 @@ def build() -> Build:
                 static_dir=STATIC,
                 sass_dir=SASS,
                 output_dir=OUT,
-                sass_bin=SASS_BIN)
+                sass_bin=SASS_BIN,
+                skip_parsing=['*.xml'])
     clean_dir()
 
 
@@ -53,6 +54,7 @@ def test_build(build):
     assert (OUT / 'blog' / 'day-abc' / 'index.html').read_text() == (
         'START The Title <ul><li>line 1<li>line 2</ul> END'
     )
+    assert (OUT / 'sitemap.xml').read_text() == ('Do not change this!')
 
     assert (OUT / 'static' / 'css' / 'home.css'
             ).read_text() == 'body {\n  background-color: aqua;\n}\n\n/*# sourceMappingURL=home.css.map */\n'

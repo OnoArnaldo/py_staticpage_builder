@@ -22,6 +22,7 @@ class Build:
         sass_dir: DirPath,
         output_dir: DirPath,
         sass_bin: DirPath,
+        skip_parsing: _.Sequence[str] = None
     ) -> None:
         self.sites_dir = sites_dir
         self.data_dir = data_dir
@@ -30,9 +31,13 @@ class Build:
         self.sass_dir = sass_dir
         self.output_dir = output_dir
         self.sass_bin = sass_bin
+        self.skip_parsing = skip_parsing or []
 
         self.filters: dict[str, _.Any] = {}
         self.globals: dict[str, _.Any] = {}
+
+    def _should_skip_parsing(self, path: Path) -> bool:
+        return any(path.match(p) for p in self.skip_parsing)
 
     def build(self, *,
               clean: bool = False,
@@ -68,15 +73,22 @@ class Build:
         sites_dir = Path(self.sites_dir)
         for fpath in sites_dir.rglob('*.*'):
             site_name = fpath.relative_to(sites_dir)
-            html = parser.render(str(site_name))
 
-            if fpath.stem == 'index':
-                dest = Path(self.output_dir, site_name.parent)
+            if self._should_skip_parsing(fpath):
+                dest = Path(self.output_dir, site_name)
+                dest.parent.mkdir(exist_ok=True)
+
+                shutil.copy2(str(fpath), str(dest))
             else:
-                dest = Path(self.output_dir, site_name).with_suffix('')
+                html = parser.render(str(site_name))
 
-            dest.mkdir(exist_ok=True, parents=True)
-            (dest / 'index.html').write_text(html)
+                if fpath.stem == 'index':
+                    dest = Path(self.output_dir, site_name.parent)
+                else:
+                    dest = Path(self.output_dir, site_name).with_suffix('')
+
+                dest.mkdir(exist_ok=True, parents=True)
+                (dest / 'index.html').write_text(html)
 
     def build_sass(self) -> None:
         output_dir = Path(self.output_dir) / 'static' / 'css'

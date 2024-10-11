@@ -57,7 +57,8 @@ if __name__ == '__main__':
         static_dir=ROOT / 'web' / 'static',
         sass_dir=ROOT / 'web' / 'sass',
         output_dir=ROOT / '_site',
-        sass_bin=ROOT / 'libs' / 'sass'
+        sass_bin=ROOT / 'libs' / 'sass',
+        skip_parsing=['sitemap.xml'],  # use Path.match pattern (https://docs.python.org/3/library/pathlib.html#pathlib.PurePath.match)
     ).register_globals(
         current_year=current_year
     ).build()
