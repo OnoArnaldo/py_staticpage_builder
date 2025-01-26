@@ -23,9 +23,9 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
-    "pytest==8.2.1",
-    "coverage==7.5.2",
-    "ruff==0.4.5",
+    "pytest==8.3.4",
+    "coverage==7.6.10",
+    "ruff==0.9.3",
 ]
 
 [project.urls]
@@ -39,4 +39,4 @@ generate-hashes = true
 strip-extras = true
 
 [tool.ruff.format]
-quote-style = "single"
+quote-style = "double"

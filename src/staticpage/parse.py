@@ -14,26 +14,26 @@ if _.TYPE_CHECKING:  # pragma: no cover
 
 
 class MarkdownExtension(Extension):
-    tags = {'markdown'}
+    tags = {"markdown"}
 
     def parse(self, parser):
         stream = next(parser.stream)
         lineno = stream.lineno
-        body = parser.parse_statements(['name:endmarkdown'], drop_needle=True)
+        body = parser.parse_statements(["name:endmarkdown"], drop_needle=True)
         return nodes.CallBlock(
-            self.call_method('call_markdown'), [], [], body
+            self.call_method("call_markdown"), [], [], body
         ).set_lineno(lineno)
 
-    def call_markdown(self, caller: 'Macro') -> str:
+    def call_markdown(self, caller: "Macro") -> str:
         block_text = caller()
         block_text = dedent(block_text).strip()
         return self.parse_markdown(block_text)[0]
 
     @classmethod
     def parse_markdown(cls, text: str) -> tuple[str, dict]:
-        md = Markdown(extensions=['meta', 'fenced_code', 'attr_list'])
+        md = Markdown(extensions=["meta", "fenced_code", "attr_list"])
         text = md.convert(text)
-        meta = {k: ' '.join(v) for k, v in md.Meta.items()}
+        meta = {k: " ".join(v) for k, v in md.Meta.items()}
         result = Template(text).safe_substitute(meta) if meta else text
         return result, meta
 
@@ -44,17 +44,17 @@ class Parser:
             loader=FileSystemLoader(template_dir),
             autoescape=select_autoescape(),
         )
-        self.env.add_extension('staticpage.parse.MarkdownExtension')
+        self.env.add_extension("staticpage.parse.MarkdownExtension")
 
     def render(self, template_name: str, **context: _.Any) -> str:
         template: JinjaTemplate = self.env.get_template(template_name)
         result = template.render(**context)
 
-        if template_name.endswith('.md'):
+        if template_name.endswith(".md"):
             result, meta = MarkdownExtension.parse_markdown(result)
 
-            if 'extends' in meta:
-                template: JinjaTemplate = self.env.get_template(meta['extends'])
+            if "extends" in meta:
+                template: JinjaTemplate = self.env.get_template(meta["extends"])
                 result = template.render(content=result, **{**context, **meta})
 
         return minify(result)

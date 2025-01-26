@@ -9,7 +9,7 @@ class DataDict(UserDict):
         if item in self.data:
             ret = self.data[item]
             return DataDict(ret) if isinstance(ret, dict) else ret
-        return ''
+        return ""
 
 
 class Data:
@@ -17,7 +17,7 @@ class Data:
         self.root = Path(data_dir)
 
     def __call__(self, filename: str) -> DataDict:
-        return self.from_file(self.root / f'{filename}.toml')
+        return self.from_file(self.root / f"{filename}.toml")
 
     def from_text(self, text: str, loads: _.Callable = None) -> DataDict:
         loads = loads or tomllib.loads
@@ -27,7 +27,7 @@ class Data:
     def from_file(self, filename: str | Path, load: _.Callable = None) -> DataDict:
         load = load or tomllib.load
 
-        with Path(filename).open('rb') as f:
+        with Path(filename).open("rb") as f:
             data = load(f)
             return DataDict(data)
 
