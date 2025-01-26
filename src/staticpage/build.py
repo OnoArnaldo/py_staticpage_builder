@@ -9,6 +9,9 @@ from . import utils
 from .data import Data
 from .parse import Parser
 
+if _.TYPE_CHECKING:
+    from jinja2.ext import Extension
+
 type DirPath = Path | str
 
 
@@ -37,6 +40,7 @@ class Build:
 
         self.filters: dict[str, _.Any] = {}
         self.globals: dict[str, _.Any] = {}
+        self.extensions: list[str] = []
 
     def _should_skip_parsing(self, path: Path) -> bool:
         return any(path.match(p) for p in self.skip_parsing)
@@ -74,6 +78,9 @@ class Build:
 
         for k, v in self.globals.items():
             parser.register_globals(k, v)
+
+        for v in self.extensions:
+            parser.register_extension(v)
 
         sites_dir = Path(self.sites_dir)
         for fpath in sites_dir.rglob('*.*'):
@@ -140,4 +147,8 @@ class Build:
 
     def register_globals(self, **globals: _.Any) -> _.Self:
         self.globals.update(globals)
+        return self
+
+    def register_extensions(self, *extensions: str | _.Type['Extension']) -> _.Self:
+        self.extensions.extend(extensions)
         return self

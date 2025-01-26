@@ -64,3 +64,6 @@ class Parser:
 
     def register_globals(self, name: str, value: _.Any) -> None:
         self.env.globals[name] = value
+
+    def register_extension(self, extension: str | _.Type[Extension]) -> None:
+        self.env.add_extension(extension)

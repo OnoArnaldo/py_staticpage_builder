@@ -4,6 +4,7 @@ from pathlib import Path
 import pytest
 
 from staticpage.build import Build
+from .ext_sample import HelloExtension
 
 ROOT = Path(__file__).parent
 
@@ -44,13 +45,17 @@ def build() -> Build:
 
 
 def test_build(build):
-    build.register_filters(in_hash=lambda x: f'##{x}##').register_globals(
-        home='https://the-home'
-    ).build(clean=True)
+    (build.register_filters(in_hash=lambda x: f'##{x}##')
+     .register_globals(home='https://the-home')
+     .register_extensions(HelloExtension)
+     .build(clean=True))
 
     assert not (OUT / 'has_to_be_deleted.txt').exists()
     assert (OUT / 'index.html').read_text() == (
-        '<start> BODY ##abc## https://the-home <h1>The name</h1> <end>'
+        '<start> BODY ##abc## https://the-home '
+        '<h1>The name</h1> '
+        '<hello mark=!! name=Arnaldo>This is the hello block.</hello> '
+        '<end>'
     )
     assert (OUT / 'blog' / 'day-abc' / 'index.html').read_text() == (
         'START The Title <ul><li>line 1<li>line 2</ul> END'
