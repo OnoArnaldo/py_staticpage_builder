@@ -4,25 +4,17 @@
 #
 #    pip-compile --generate-hashes --strip-extras requirements/prod.in
 #
-click==8.1.7 \
-    --hash=sha256:ae74fb96c20a0277a1d615f1e4d73c8414f5a98db8b799a7931d1582f3390c28 \
-    --hash=sha256:ca9853ad459e787e2192211578cc907e7594e294c7ccc834310722b41b9ca6de
+click==8.1.8 \
+    --hash=sha256:63c132bbbed01578a06712a2d1f497bb62d9c1c0d329b7903a866228027263b2 \
+    --hash=sha256:ed53c9d8990d83c2a27deae68e4ee337473f6330c040a31d4225c9574d16096a
     # via -r requirements/prod.in
-jinja2==3.1.4 \
-    --hash=sha256:4a3aee7acbbe7303aede8e9648d13b8bf88a429282aa6122a993f0ac800cb369 \
-    --hash=sha256:bc5dd2abb727a5319567b7a813e6a2e7318c39f4f487cfe6c89c6f9c7d25197d
+jinja2==3.1.5 \
+    --hash=sha256:8fefff8dc3034e27bb80d67c671eb8a9bc424c0ef4c0826edbff304cceff43bb \
+    --hash=sha256:aba0f4dc9ed8013c424088f68a5c226f7d6097ed89b246d7749c2ec4175c6adb
     # via -r requirements/prod.in
-libsass==0.23.0 \
-    --hash=sha256:31e86d92a5c7a551df844b72d83fc2b5e50abc6fbbb31e296f7bebd6489ed1b4 \
-    --hash=sha256:34cae047cbbfc4ffa832a61cbb110f3c95f5471c6170c842d3fed161e40814dc \
-    --hash=sha256:4a218406d605f325d234e4678bd57126a66a88841cb95bee2caeafdc6f138306 \
-    --hash=sha256:6f209955ede26684e76912caf329f4ccb57e4a043fd77fe0e7348dd9574f1880 \
-    --hash=sha256:a2ec85d819f353cbe807432d7275d653710d12b08ec7ef61c124a580a8352f3c \
-    --hash=sha256:ea97d1b45cdc2fc3590cb9d7b60f1d8915d3ce17a98c1f2d4dd47ee0d9c68ce6
-    # via -r requirements/prod.in
-markdown==3.6 \
-    --hash=sha256:48f276f4d8cfb8ce6527c8f79e2ee29708508bf4d40aa410fbc3b4ee832c850f \
-    --hash=sha256:ed4f41f6daecbeeb96e576ce414c41d2d876daa9a16cb35fa8ed8c2ddfad0224
+markdown==3.7 \
+    --hash=sha256:2ae2471477cfd02dbbf038d5d9bc226d40def84b4fe2986e49b59b6b472bbed2 \
+    --hash=sha256:7eb6df5690b81a1d7942992c97fad2938e956e79df20cbc6186e9c3a77b1c803
     # via -r requirements/prod.in
 markupsafe==2.1.5 \
     --hash=sha256:00e046b6dd71aa03a41079792f8473dc494d564611a8f89bbbd7cb93295ebdcf \
