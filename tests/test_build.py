@@ -1,5 +1,6 @@
 import shutil
 from pathlib import Path
+from collections.abc import Generator
 
 import pytest
 
@@ -29,7 +30,7 @@ def clean_dir():
 
 
 @pytest.fixture
-def build() -> Build:
+def build() -> Generator[Build, None, None]:
     add_dirty_to_output()
     OUT.mkdir(exist_ok=True)
     yield Build(

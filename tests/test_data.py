@@ -15,6 +15,12 @@ class FakePath(Path):
         self.logs.append(str(args))
         return self
 
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        return True
+
+    def __enter__(self):
+        return self
+
     def open(self, *args, **kwargs):
         self.logs.append("open")
         return self

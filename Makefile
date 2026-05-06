@@ -1,4 +1,4 @@
-PYTHON=python3.12
+PYTHON=python3.14
 VENV=.venv
 
 PIP=$(VENV)/bin/pip

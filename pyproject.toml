@@ -1,9 +1,9 @@
 [project]
 name = "py_staticpage_builder"
-version = "2025.01.26.1"
+version = "2026.05.06.1"
 description = "Static page generator."
 readme = "README.md"
-requires-python = "~=3.12"
+requires-python = "~=3.14"
 license = { file = "LICENSE" }
 authors = [{ name = "Arnaldo Ono", email = "programmer@onoarnaldo.com" }]
 keywords = ["static page", "builder"]
@@ -11,21 +11,21 @@ classifiers = [
     "Development Status :: 2 - Pre-Alpha",
     "Intended Audience :: Developers",
     "Natural Language :: English",
-    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.14",
     "Topic :: Software Development :: Code Generators"
 ]
 dependencies = [
-    "jinja2==3.1.5",
-    "click==8.1.8",
-    "markdown==3.7",
-    "minify-html==0.15.0",
+    "jinja2~=3.1",
+    "click~=8.3",
+    "markdown~=3.10",
+    "minify-html~=0.18",
 ]
 
 [project.optional-dependencies]
 dev = [
-    "pytest==8.3.4",
-    "coverage==7.6.10",
-    "ruff==0.9.3",
+    "pytest~=9.0",
+    "coverage~=7.13",
+    "ruff~=0.15",
 ]
 
 [project.urls]
