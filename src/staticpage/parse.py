@@ -31,7 +31,7 @@ class MarkdownExtension(Extension):
 
     @classmethod
     def parse_markdown(cls, text: str) -> tuple[str, dict]:
-        md = Markdown(extensions=["meta", "fenced_code", "attr_list"])
+        md = Markdown(extensions=["meta", "fenced_code", "attr_list", "tables"])
         text = md.convert(text)
         meta = {k: " ".join(v) for k, v in md.Meta.items()}
         result = Template(text).safe_substitute(meta) if meta else text
